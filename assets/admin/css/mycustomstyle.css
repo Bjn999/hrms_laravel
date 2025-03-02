@@ -1,0 +1,52 @@
+.width30{
+    width:30%;
+}
+.float_right{
+    float:  right !important;
+}
+.custom_img{
+    width:150px;
+    height: 150px;
+}
+.card_title_center{
+    width: 100%;
+    text-align: center !important;
+}
+
+.custom_thead {
+    background-color: #233490;
+    color: #fff;
+}
+
+table .btn {
+    margin-top: 2px;
+}
+
+.custom_form {
+    border: 1px solid lightgray;
+    border-radius: 7px;
+    padding: 10px;
+    background-color: white;
+    margin-bottom: 7px;
+}
+
+h4.model-title {
+    text-align: center;
+    width: 100%;
+}
+
+.model {
+    overflow: scroll;
+}
+
+.custome3 {
+    font-size: 18px;
+    text-align: center;
+    color: brown;
+}
+
+div#show_year_monthesModalBody {
+    background-color: white;
+    color: black;
+}
+
