@@ -38,7 +38,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="company_name">اسم الشركة:</label>
-                        <input type="text" name="company_name" id="company_name" class="form-control" value="{{ old('company_name', $data['company_name']) }}" placeholder="أدخل اسم الشركة">
+                        <input type="text" autofocus name="company_name" id="company_name" class="form-control" value="{{ old('company_name', $data['company_name']) }}" placeholder="أدخل اسم الشركة">
                         @error('company_name')
                             <span class="text-danger"> {{ $message }} </span>
                         @enderror

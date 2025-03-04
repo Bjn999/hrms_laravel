@@ -53,8 +53,8 @@
                                     $dt = new DateTime($info->created_at);
                                     $date = $dt->format("Y-m-d");
                                     $time = $dt->format("h-i");
-                                    $newDateTime = date("A", strtotime($time));
-                                    //$newDateTime = $dt->format("AM");
+                                    $newDateTime = $dt->format("A");
+                                    //$newDateTime = date("A", strtotime($time));
                                     $newDateTimeType = (($newDateTime == "AM") ? "صباحاً" : "مساءاً")
                                 @endphp
                                 
@@ -71,8 +71,8 @@
                                         $dt = new DateTime($info->updated_at);
                                         $date = $dt->format("Y-m-d");
                                         $time = $dt->format("h-i");
-                                        $newDateTime = date("A", strtotime($time));
-                                        //$newDateTime = $dt->format("AM");
+                                        $newDateTime = $dt->format("A");
+                                        //$newDateTime = date("A", strtotime($time));
                                         $newDateTimeType = (($newDateTime == "AM") ? "صباحاً" : "مساءاً")
                                     @endphp
                                     

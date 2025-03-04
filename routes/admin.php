@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\Finance_calendersController;
 use App\Http\Controllers\admin\BranchesController;
 use App\Http\Controllers\admin\DepartmentsController;
 use App\Http\Controllers\admin\jobs_categoriesController;
+use App\Http\Controllers\Admin\OccasionsController;
 use App\Http\Controllers\admin\QualificationsController;
 use App\Http\Controllers\admin\Shifts_typeController;
 
@@ -78,6 +79,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::get('/qualificationsEdit/{id}', [QualificationsController::class, 'edit'])->name('qualifications.edit');
     Route::post('/qualificationsUpdate/{id}', [QualificationsController::class, 'update'])->name('qualifications.update');
     Route::get('/qualificationsDelete/{id}', [QualificationsController::class, 'destroy'])->name('qualifications.destroy');
+    
+    // بداية المناسبات الرسمية
+    Route::get('/occasions', [OccasionsController::class, 'index'])->name('occasions.index');
+    Route::get('/occasions/create', [OccasionsController::class, 'create'])->name('occasions.create');
+    Route::post('/occasions/store', [OccasionsController::class, 'store'])->name('occasions.store');
+    Route::get('/occasionsEdit/{id}', [OccasionsController::class, 'edit'])->name('occasions.edit');
+    Route::post('/occasionsUpdate/{id}', [OccasionsController::class, 'update'])->name('occasions.update');
+    Route::get('/occasionsDelete/{id}', [OccasionsController::class, 'destroy'])->name('occasions.destroy');
 
 });
 

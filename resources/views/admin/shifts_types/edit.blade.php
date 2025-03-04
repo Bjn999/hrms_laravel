@@ -32,7 +32,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="type">نوع الشفت:</label>
-                            <select name="type" id="type" class="form-control">
+                            <select name="type" autofocus id="type" class="form-control">
                                 <option value="">اختر نوع</option>
                                 <option @if(old("type", $data['type']) == 1) selected @endif value="1">صباحي</option>
                                 <option @if(old("type", $data['type']) == 2) selected @endif value="2">مسائي</option>

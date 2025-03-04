@@ -33,7 +33,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="finance_yr">كود السنة المالية:</label>
-                            <input type="text" name="finance_yr" id="finance_yr" class="form-control" value="{{ old('finance_yr', $data['finance_yr']) }}">
+                            <input type="text" autofocus name="finance_yr" id="finance_yr" class="form-control" value="{{ old('finance_yr', $data['finance_yr']) }}">
                             @error('finance_yr')
                                 <span class="text-danger"> {{ $message }} </span>
                             @enderror

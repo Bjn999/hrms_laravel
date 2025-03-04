@@ -14,8 +14,8 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
-        <li class="nav-item has-treeview {{ ( request()->is('admin/generalSettings*') || request()->is('admin/finance_calenders*') || request()->is('admin/branches*') || request()->is('admin/shiftTypes*') || request()->is('admin/departments*') || request()->is('admin/jobs_categories*') || request()->is('admin/qualifications*') ) ? 'menu-open' : '' }}">
-          <a href="#" class="nav-link {{ ( request()->is('admin/generalSettings*') || request()->is('admin/finance_calenders*') || request()->is('admin/branches*') || request()->is('admin/shiftTypes*') || request()->is('admin/departments*') || request()->is('admin/jobs_categories*') || request()->is('admin/qualifications*') ) ? 'active' : '' }}">
+        <li class="nav-item has-treeview {{ ( request()->is('admin/generalSettings*') || request()->is('admin/finance_calenders*') || request()->is('admin/branches*') || request()->is('admin/shiftTypes*') || request()->is('admin/departments*') || request()->is('admin/jobs_categories*') || request()->is('admin/qualifications*') || request()->is('admin/occasions*') ) ? 'menu-open' : '' }}">
+          <a href="#" class="nav-link {{ ( request()->is('admin/generalSettings*') || request()->is('admin/finance_calenders*') || request()->is('admin/branches*') || request()->is('admin/shiftTypes*') || request()->is('admin/departments*') || request()->is('admin/jobs_categories*') || request()->is('admin/qualifications*') || request()->is('admin/occasions*') ) ? 'active' : '' }}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
               قائمة الضبط
@@ -70,6 +70,13 @@
                 <i class="far fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>مؤهلات الموظفين</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('occasions.index') }}" class="nav-link {{request()->is('admin/occasions*') ? 'active' : ''}} ">
+                <i class="far fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-building"></i> --}}
+                <p>المناسبات الرسمية</p>
               </a>
             </li>
           </ul>

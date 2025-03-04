@@ -32,7 +32,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="name">اسم الوظيفة:</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}">
+                            <input type="text" autofocus name="name" id="name" class="form-control" value="{{ old('name') }}">
                             @error('name')
                                 <span class="text-danger"> {{ $message }} </span>
                             @enderror

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    الإدارات
+    المناسبات الرسمية
 @endsection
 
 @section('contentheader')
@@ -9,7 +9,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-    <a href="{{ route('departments.index') }}">الإدارات</a>
+    <a href="{{ route('occasions.index') }}">المناسبات الرسمية</a>
 @endsection
 
 @section('contentheaderactive')
@@ -22,16 +22,16 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title card_title_center"> 
-                    إضافة إدارة جديدة
+                    إضافة مناسبة جديدة
                 </h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('departments.store') }}" method="post">
+                <form action="{{ route('occasions.store') }}" method="post">
                     @csrf
 
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="name">اسم الإدارة:</label>
+                            <label for="name">اسم المناسبة:</label>
                             <input type="text" autofocus name="name" id="name" class="form-control" value="{{ old('name') }}">
                             @error('name')
                                 <span class="text-danger"> {{ $message }} </span>
@@ -40,18 +40,27 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="phones">هاتف الإدارة:</label>
-                            <input type="text" name="phones" id="phones" class="form-control" value="{{ old('phones') }}" oninput="this.value = this.value.replace(/[^0-9,+]/g,'')">
-                            @error('phones')
+                            <label for="from_date">من تاريخ:</label>
+                            <input type="date" name="from_date" id="from_date" class="form-control" value="{{ old('from_date') }}">
+                            @error('from_date')
                                 <span class="text-danger"> {{ $message }} </span>
                             @enderror
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="notes">الملاحظات على الإدارة:</label>
-                            <input type="text" name="notes" id="notes" class="form-control" value="{{ old('notes') }}">
-                            @error('notes')
+                            <label for="to_date">إلى تاريخ:</label>
+                            <input type="date" name="to_date" id="to_date" class="form-control" value="{{ old('to_date') }}">
+                            @error('to_date')
+                                <span class="text-danger"> {{ $message }} </span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="days_counter">عدد الأيام:</label>
+                            <input type="text" name="days_counter" id="days_counter" class="form-control" value="{{ old('days_counter') }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                            @error('days_counter')
                                 <span class="text-danger"> {{ $message }} </span>
                             @enderror
                         </div>
@@ -70,8 +79,8 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group text-center">
-                            <button class="btn btn-success" type="submit" name="submit">إضافة الإدارة</button>
-                            <a href=" {{ route('departments.index') }} " class="btn btn-danger">إلغاء</a>
+                            <button class="btn btn-success" type="submit" name="submit">إضافة المناسبة</button>
+                            <a href=" {{ route('occasions.index') }} " class="btn btn-danger">إلغاء</a>
                         </div>
                     </div>
                 </form>

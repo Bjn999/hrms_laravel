@@ -31,8 +31,8 @@
 
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="name">اسم الوظيفة:</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}">
+                            <label for="name">اسم المؤهل:</label>
+                            <input type="text" autofocus name="name" id="name" class="form-control" value="{{ old('name') }}">
                             @error('name')
                                 <span class="text-danger"> {{ $message }} </span>
                             @enderror
@@ -52,7 +52,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group text-center">
-                            <button class="btn btn-success" type="submit" name="submit">إضافة الإدارة</button>
+                            <button class="btn btn-success" type="submit" name="submit">إضافة المؤهل</button>
                             <a href=" {{ route('qualifications.index') }} " class="btn btn-danger">إلغاء</a>
                         </div>
                     </div>

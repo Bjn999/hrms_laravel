@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    مؤهلات الموظفين
+    المناسبات الرسمية
 @endsection
 
 @section('contentheader')
@@ -9,7 +9,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-    <a href="{{ route('qualifications.index') }}">مؤهلات الموظفين</a>
+    <a href="{{ route('occasions.index') }}">المناسبات الرسمية</a>
 @endsection
 
 @section('contentheaderactive')
@@ -22,8 +22,8 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title card_title_center"> 
-                    بيانات مؤهلات الموظفين 
-                    <a href=" {{ route('qualifications.create') }} " class="btn btn-sm btn-success">إضافة جديد</a>
+                    بيانات المناسبات الرسمية 
+                    <a href=" {{ route('occasions.create') }} " class="btn btn-sm btn-success">إضافة جديد</a>
                 </h3>
             </div>
             <div class="card-body">
@@ -31,7 +31,10 @@
                 <table id="example2" class="table table-bordered table-hover text-center">
                     <thead class="custom_thead">
                         <tr>
-                            <th style="vertical-align: middle"> اسم المؤهل </th>
+                            <th style="vertical-align: middle"> اسم المناسبة </th>
+                            <th style="vertical-align: middle"> من تاريخ </th>
+                            <th style="vertical-align: middle"> إلى تاريخ </th>
+                            <th style="vertical-align: middle"> عدد الأيام </th>
                             <th style="vertical-align: middle"> حالة التفعيل </th>
                             <th style="vertical-align: middle"> الإضافة بواسطة </th>
                             <th style="vertical-align: middle"> التحديث بواسطة </th>
@@ -42,6 +45,9 @@
                         @foreach ( $data as $info )
                         <tr>
                             <td style="vertical-align: middle"> {{ $info->name }} </td>
+                            <td style="vertical-align: middle"> {{ $info->from_date }} </td>
+                            <td style="vertical-align: middle"> {{ $info->to_date }} </td>
+                            <td style="vertical-align: middle"> {{ $info->days_counter }} </td>
                             <td style="vertical-align: middle" @if ($info->active==1) class="bg-success" @else class="bg-danger" @endif > @if ($info->active==1) مفعل @else معطل @endif </td>
                             
                             <td style="vertical-align: middle"> 
@@ -84,8 +90,8 @@
                             </td>
                             <td style="vertical-align: middle">
 
-                                <a href="{{ route('qualifications.edit', $info->id) }}" class="btn btn-success">تعديل</a>
-                                <a href="{{ route('qualifications.destroy', $info->id) }}" class="btn btn-danger r_u_sure">حذف</a>
+                                <a href="{{ route('occasions.edit', $info->id) }}" class="btn btn-success">تعديل</a>
+                                <a href="{{ route('occasions.destroy', $info->id) }}" class="btn btn-danger r_u_sure">حذف</a>
 
                             </td>
                         </tr>
