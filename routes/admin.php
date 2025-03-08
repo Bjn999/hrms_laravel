@@ -8,8 +8,11 @@ use App\Http\Controllers\admin\Finance_calendersController;
 use App\Http\Controllers\admin\BranchesController;
 use App\Http\Controllers\admin\DepartmentsController;
 use App\Http\Controllers\admin\jobs_categoriesController;
+use App\Http\Controllers\admin\NationalitiesController;
 use App\Http\Controllers\Admin\OccasionsController;
 use App\Http\Controllers\admin\QualificationsController;
+use App\Http\Controllers\admin\ReligionsController;
+use App\Http\Controllers\admin\ResignationsController;
 use App\Http\Controllers\admin\Shifts_typeController;
 
 /*
@@ -87,6 +90,30 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::get('/occasionsEdit/{id}', [OccasionsController::class, 'edit'])->name('occasions.edit');
     Route::post('/occasionsUpdate/{id}', [OccasionsController::class, 'update'])->name('occasions.update');
     Route::get('/occasionsDelete/{id}', [OccasionsController::class, 'destroy'])->name('occasions.destroy');
+    
+    // بداية إنهاء الخدمة
+    Route::get('/resignations', [ResignationsController::class, 'index'])->name('resignations.index');
+    Route::get('/resignations/create', [ResignationsController::class, 'create'])->name('resignations.create');
+    Route::post('/resignations/store', [ResignationsController::class, 'store'])->name('resignations.store');
+    Route::get('/resignationsEdit/{id}', [ResignationsController::class, 'edit'])->name('resignations.edit');
+    Route::post('/resignationsUpdate/{id}', [ResignationsController::class, 'update'])->name('resignations.update');
+    Route::get('/resignationsDelete/{id}', [ResignationsController::class, 'destroy'])->name('resignations.destroy');
+    
+    // بداية الجنسيات
+    Route::get('/nationalities', [NationalitiesController::class, 'index'])->name('nationalities.index');
+    Route::get('/nationalities/create', [NationalitiesController::class, 'create'])->name('nationalities.create');
+    Route::post('/nationalities/store', [NationalitiesController::class, 'store'])->name('nationalities.store');
+    Route::get('/nationalitiesEdit/{id}', [NationalitiesController::class, 'edit'])->name('nationalities.edit');
+    Route::post('/nationalitiesUpdate/{id}', [NationalitiesController::class, 'update'])->name('nationalities.update');
+    Route::get('/nationalitiesDelete/{id}', [NationalitiesController::class, 'destroy'])->name('nationalities.destroy');
+    
+    // بداية الديانات
+    Route::get('/religions', [ReligionsController::class, 'index'])->name('religions.index');
+    Route::get('/religions/create', [ReligionsController::class, 'create'])->name('religions.create');
+    Route::post('/religions/store', [ReligionsController::class, 'store'])->name('religions.store');
+    Route::get('/religionsEdit/{id}', [ReligionsController::class, 'edit'])->name('religions.edit');
+    Route::post('/religionsUpdate/{id}', [ReligionsController::class, 'update'])->name('religions.update');
+    Route::get('/religionsDelete/{id}', [ReligionsController::class, 'destroy'])->name('religions.destroy');
 
 });
 

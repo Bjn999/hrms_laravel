@@ -83,7 +83,7 @@ class QualificationsController extends Controller
 
             DB::commit();
             
-            return redirect()->route('qualifications.index', ['data' => $data])->with(['success' => 'تم تحديث البيانات بنجاح']);
+            return redirect()->route('qualifications.index')->with(['success' => 'تم تحديث البيانات بنجاح']);
 
         } catch (\Exception $ex) {
             DB::rollBack();
@@ -109,7 +109,7 @@ class QualificationsController extends Controller
             
         } catch (\Exception $ex) {
             DB::rollBack();
-            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما '.$ex->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما '.$ex->getMessage()]);
         }
     }
     
