@@ -25,93 +25,138 @@
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="{{ route('admin_panel_settings.index') }}" class="nav-link {{request()->is('admin/generalSettings*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/generalSettings*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
                 <p>الضبط العام</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('finance_calenders.index') }}" class="nav-link {{request()->is('admin/finance_calenders*') ? 'active' : ''}} ">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/finance_calenders*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-money-bill"></i> --}}
                 <p>السنوات المالية</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('branches.index') }}" class="nav-link {{request()->is('admin/branches*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/branches*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>الفروع</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('shiftstypes.index') }}" class="nav-link {{request()->is('admin/shiftTypes*') ? 'active' : ''}} ">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/shiftTypes*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>أنواع الشفتات</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('departments.index') }}" class="nav-link {{request()->is('admin/departments*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/departments*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>إدارات الموظفين</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('jobs_categories.index') }}" class="nav-link {{request()->is('admin/jobs_categories*') ? 'active' : ''}} ">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/jobs_categories*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>فئات الوظائف</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('qualifications.index') }}" class="nav-link {{request()->is('admin/qualifications*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/qualifications*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>مؤهلات الموظفين</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('occasions.index') }}" class="nav-link {{request()->is('admin/occasions*') ? 'active' : ''}} ">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/occasions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>المناسبات الرسمية</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('resignations.index') }}" class="nav-link {{request()->is('admin/resignations*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/resignations*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>أنواع ترك العمل</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('nationalities.index') }}" class="nav-link {{request()->is('admin/nationalities*') ? 'active' : ''}} ">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/nationalities*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>أنواع الجنسيات</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/religions*') ? 'active' : ''}} ">
-                <i class="fas fa-circle nav-icon"></i>
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-building"></i> --}}
                 <p>أنواع الديانات</p>
               </a>
             </li>
           </ul>
         </li>
-        {{-- <hr style="height: 2px; margin: 2px 0; background: #999;">
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-th"></i>
+        <li class="nav-item has-treeview {{ ( request()->is('admin/employees*') ) ? 'menu-open' : '' }}">
+          <a href="#" class="nav-link {{ ( request()->is('admin/employees*') ) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-user"></i>
             <p>
-              Simple Link
-              <span class="right badge badge-danger">New</span>
+              قائمة شؤون الموظفين
+              <i class="right fas fa-angle-left"></i>
             </p>
           </a>
-        </li> --}}
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ route('employees.index') }}" class="nav-link {{request()->is('admin/employees*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/employees*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>بيانات موظفين الإدارة</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>بيانات الموظفين</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>أنواع الإضافة للراتب</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/religions*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>أنواع الخصم للراتب</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/religions*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>أنواع البدلات للراتب</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('religions.index') }}" class="nav-link {{request()->is('admin/religions*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/religions*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>هواتف الموظفين</p>
+              </a>
+            </li>
+            
+          </ul>
+        </li>
+
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

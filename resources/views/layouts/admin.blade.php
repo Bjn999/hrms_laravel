@@ -19,6 +19,8 @@
         <!-- SweetAlert 2 -->
         {{-- <link rel="stylesheet" href="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.css')}}"> --}}
 
+        @yield('css')
+
         <!-- Google Font: Source Sans Pro -->
         <link rel="stylesheet" href="{{url('assets/admin/fonts/SansPro/SansPro.min.css')}}">
         <link rel="stylesheet" href="{{url('assets/admin/css/bootstrap_rtl-v4.2.1/bootstrap.min.css')}}">

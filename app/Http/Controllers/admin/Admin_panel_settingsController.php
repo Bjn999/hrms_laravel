@@ -15,9 +15,9 @@ class Admin_panel_settingsController extends Controller
      */
     public function index()
     {
-        //
         $com_code = Auth()->user()->com_code;
         $data = Admin_panel_settings::select('*')->where('com_code', $com_code)->first();
+        
         return view('admin.admin_panel_settings.index', ['data' => $data]);
     }
 
@@ -26,9 +26,9 @@ class Admin_panel_settingsController extends Controller
      */
     public function edit()
     {
-        //
         $com_code = Auth()->user()->com_code;
         $data = Admin_panel_settings::select('*')->where('com_code', $com_code)->first();
+        
         return view('admin.admin_panel_settings.edit', ['data' => $data]);
     }
     
@@ -37,7 +37,6 @@ class Admin_panel_settingsController extends Controller
      */
     public function update(Admin_panel_settingsRequest $request)
     {
-        //
         try {
             $com_code = auth()->user()->com_code;
             $dataToUpdate['company_name'] = $request->input('company_name');

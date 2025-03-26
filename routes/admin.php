@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\Admin_panel_settingsController;
 use App\Http\Controllers\admin\Finance_calendersController;
 use App\Http\Controllers\admin\BranchesController;
 use App\Http\Controllers\admin\DepartmentsController;
+use App\Http\Controllers\admin\EmployeesController;
 use App\Http\Controllers\admin\jobs_categoriesController;
 use App\Http\Controllers\admin\NationalitiesController;
 use App\Http\Controllers\Admin\OccasionsController;
@@ -114,6 +115,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::get('/religionsEdit/{id}', [ReligionsController::class, 'edit'])->name('religions.edit');
     Route::post('/religionsUpdate/{id}', [ReligionsController::class, 'update'])->name('religions.update');
     Route::get('/religionsDelete/{id}', [ReligionsController::class, 'destroy'])->name('religions.destroy');
+    
+    /************************ شؤون الموظفين ************************/
+
+    // بداية الموظفين
+    Route::get('/employees', [EmployeesController::class, 'index'])->name('employees.index');
+    Route::get('/employees/create', [EmployeesController::class, 'create'])->name('employees.create');
+    Route::post('/employees/store', [EmployeesController::class, 'store'])->name('employees.store');
+    Route::get('/employeesEdit/{id}', [EmployeesController::class, 'edit'])->name('employees.edit');
+    Route::post('/employeesUpdate/{id}', [EmployeesController::class, 'update'])->name('employees.update');
+    Route::get('/employeesDelete/{id}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
+    Route::post('/employees/getGovernorate', [EmployeesController::class, 'ajax_getGovernorate'])->name('employees.ajax_getGovernorate');
+    Route::post('/employees/getCenter', [EmployeesController::class, 'ajax_getCity'])->name('employees.ajax_getCity');
 
 });
 

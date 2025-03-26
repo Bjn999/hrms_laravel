@@ -59,7 +59,7 @@
       <form action="{{ route('admin.login') }}" method="post">
         @csrf
         <div class="input-group mb-3">
-          <input type="text" name="username" class="form-control" placeholder="اسم المستخدم" >
+          <input autofocus type="text" name="username" class="form-control" placeholder="اسم المستخدم" >
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
