@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-بيانات الموظفين
+شؤون الموظفين
 @endsection
 
 @section('css')

@@ -743,7 +743,7 @@
                                         <thead class="custom_thead">
                                             <tr>
                                                 <th style="vertical-align: middle"> الاسم </th>
-                                                <th style="vertical-align: middle"> الصورة </th>
+                                                <th style="vertical-align: middle"> الملف </th>
                                                 <th> </th>
                                             </tr>
                                         </thead>

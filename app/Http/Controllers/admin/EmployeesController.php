@@ -77,7 +77,8 @@ class EmployeesController extends Controller
             }
 
             // تأكد من ان كود بصمة الموظف لا يتكرر ابداً
-            $checkExist_zketo_code = get_cols_where_row(new Employee(), array('id'), array('zketo_code' => $request->zketo_code, 'com_code' => $com_code));
+            // $checkExist_zketo_code = get_cols_where_row(new Employee(), array('id'), array('zketo_code' => $request->zketo_code, 'com_code' => $com_code));
+            $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('zketo_code', '!=', '')->first();
             if (!empty($checkExist_zketo_code)) {
                 return redirect()->back()->with(['error' => 'عفواً كود بصمة الموظف مسجل من قبل'])->withInput();
             }
@@ -281,8 +282,9 @@ class EmployeesController extends Controller
                 return redirect()->back()->with(['error' => 'عفواً اسم الموظف مسجل من قبل'])->withInput();
             }
 
-            // تأكد من ان اسم الموظف لا يتكرر ابداً
-            $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('id', '!=', $id)->first();
+            // تأكد من ان كود بصمة الموظف لا يتكرر ابداً
+            // $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('id', '!=', $id)->first();
+            $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('id', '!=', $id)->where('zketo_code', '!=', '')->first();
             if (!empty($checkExist_zketo_code)) {
                 return redirect()->back()->with(['error' => 'عفواً كود بصمة الموظف مسجل من قبل'])->withInput();
             }

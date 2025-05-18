@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\admin\Additional_sal_typesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\LoginController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\Admin_panel_settingsController;
+use App\Http\Controllers\admin\AllowancesController;
 use App\Http\Controllers\admin\Finance_calendersController;
 use App\Http\Controllers\admin\BranchesController;
 use App\Http\Controllers\admin\DepartmentsController;
+use App\Http\Controllers\admin\Discount_sal_typesController;
 use App\Http\Controllers\admin\EmployeesController;
 use App\Http\Controllers\admin\jobs_categoriesController;
 use App\Http\Controllers\admin\NationalitiesController;
@@ -134,6 +137,30 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::get('/employees/download_file/{id}', [EmployeesController::class, 'download_file'])->name('employees.download_file');
     Route::get('/employees/destroy_file/{id}', [EmployeesController::class, 'destroy_file'])->name('employees.destroy_file');
 
+    // بداية الإضافي على الراتب
+    Route::get('/additionalSalTypes', [Additional_sal_typesController::class, 'index'])->name('additionalsaltypes.index');
+    Route::get('/additionalSalTypes/create', [Additional_sal_typesController::class, 'create'])->name('additionalsaltypes.create');
+    Route::post('/additionalSalTypes/store', [Additional_sal_typesController::class, 'store'])->name('additionalsaltypes.store');
+    Route::get('/additionalSalTypesEdit/{id}', [Additional_sal_typesController::class, 'edit'])->name('additionalsaltypes.edit');
+    Route::post('/additionalSalTypesUpdate/{id}', [Additional_sal_typesController::class, 'update'])->name('additionalsaltypes.update');
+    Route::get('/additionalSalTypesDelete/{id}', [Additional_sal_typesController::class, 'destroy'])->name('additionalsaltypes.destroy');
+
+    // بداية الخصم على الراتب
+    Route::get('/discountSalTypes', [Discount_sal_typesController::class, 'index'])->name('discountsaltypes.index');
+    Route::get('/discountSalTypes/create', [Discount_sal_typesController::class, 'create'])->name('discountsaltypes.create');
+    Route::post('/discountSalTypes/store', [Discount_sal_typesController::class, 'store'])->name('discountsaltypes.store');
+    Route::get('/discountSalTypesEdit/{id}', [Discount_sal_typesController::class, 'edit'])->name('discountsaltypes.edit');
+    Route::post('/discountSalTypesUpdate/{id}', [Discount_sal_typesController::class, 'update'])->name('discountsaltypes.update');
+    Route::get('/discountSalTypesDelete/{id}', [Discount_sal_typesController::class, 'destroy'])->name('discountsaltypes.destroy');
+
+    // بداية البدلات للموضف
+    Route::get('/allowances', [AllowancesController::class, 'index'])->name('allowances.index');
+    Route::get('/allowances/create', [AllowancesController::class, 'create'])->name('allowances.create');
+    Route::post('/allowances/store', [AllowancesController::class, 'store'])->name('allowances.store');
+    Route::get('/allowancesEdit/{id}', [AllowancesController::class, 'edit'])->name('allowances.edit');
+    Route::post('/allowancesUpdate/{id}', [AllowancesController::class, 'update'])->name('allowances.update');
+    Route::get('/allowancesDelete/{id}', [AllowancesController::class, 'destroy'])->name('allowances.destroy');
+    
 });
 
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'guest:admin'], function (){
