@@ -127,6 +127,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::get('/employeesDelete/{id}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
     Route::post('/employees/getGovernorate', [EmployeesController::class, 'ajax_getGovernorate'])->name('employees.ajax_getGovernorate');
     Route::post('/employees/getCenter', [EmployeesController::class, 'ajax_getCity'])->name('employees.ajax_getCity');
+    Route::get('/employees/show/{id}', [EmployeesController::class, 'show'])->name('employees.show');
+    Route::post('/employees/search', [EmployeesController::class, 'ajax_search'])->name('employees.ajax_search');
+    Route::get('/employees/download/{id}/{field_name}', [EmployeesController::class, 'download'])->name('employees.download');
+    Route::post('/employees/addFiles/{id}', [EmployeesController::class, 'add_files'])->name('employees.add_files');
+    Route::get('/employees/download_file/{id}', [EmployeesController::class, 'download_file'])->name('employees.download_file');
+    Route::get('/employees/destroy_file/{id}', [EmployeesController::class, 'destroy_file'])->name('employees.destroy_file');
 
 });
 

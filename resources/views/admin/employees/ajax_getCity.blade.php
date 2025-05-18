@@ -9,7 +9,7 @@
 
 <label for="city_id">المدينة/المركز:</label>
 <select name="city_id" id="city_id" class="form-control select2">
-    <option selected value="">اختر دولة</option>
+    <option selected value="">اختر مدينة</option>
 
     @if (isset($data['cities']) and !empty($data['cities']))
         @foreach ($data['cities'] as $info)

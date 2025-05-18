@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blood_groups', function (Blueprint $table) {
+        Schema::create('employees_files', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255);
-            $table->integer('com_code');
-            $table->tinyInteger('active')->default(1);
+            $table->string('name', 250);
+            $table->string('file_path', 100);
+            $table->foreignId('employee_id')->references('id')->on('employees')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('added_by')->references('id')->on('admins')->onUpdate('cascade');
             $table->foreignId('updated_by')->nullable()->references('id')->on('admins')->onUpdate('cascade');
-
+            $table->integer('com_code');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blood_groups');
+        Schema::dropIfExists('employees_files');
     }
 };

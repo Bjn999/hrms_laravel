@@ -67,7 +67,7 @@ class NationalitiesController extends Controller
             }
             
             $chechExist = Nationality::select('*')->where(['com_code' => $com_code, 'name' => $request->name])->where('id', '!=', $id)->first();
-            if (empty($chechExist)) {
+            if (!empty($chechExist)) {
                 return redirect()->back()->with(['error' => 'عفواً هذه الجنسية مسجلة من قبل'])->withInput();
             }
 

@@ -9,7 +9,7 @@
 
 <label for="governorate_id">المحافظة:</label>
 <select name="governorate_id" id="governorate_id" class="form-control select2">
-    <option selected value="">اختر دولة</option>
+    <option selected value="">اختر محافظة</option>
 
     @if (isset($data['governorates']) and !empty($data['governorates']))
         @foreach ($data['governorates'] as $info)
