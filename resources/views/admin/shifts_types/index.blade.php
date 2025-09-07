@@ -27,7 +27,7 @@
             </h3>
         </div>
 
-        <div class="row">
+        <div class="row mx-2 mt-2">
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="type">نوع الشفت:</label>

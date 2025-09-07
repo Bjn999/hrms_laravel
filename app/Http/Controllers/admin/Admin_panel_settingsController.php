@@ -17,7 +17,7 @@ class Admin_panel_settingsController extends Controller
     {
         $com_code = Auth()->user()->com_code;
         $data = Admin_panel_settings::select('*')->where('com_code', $com_code)->first();
-        
+
         return view('admin.admin_panel_settings.index', ['data' => $data]);
     }
 
@@ -28,10 +28,10 @@ class Admin_panel_settingsController extends Controller
     {
         $com_code = Auth()->user()->com_code;
         $data = Admin_panel_settings::select('*')->where('com_code', $com_code)->first();
-        
+
         return view('admin.admin_panel_settings.edit', ['data' => $data]);
     }
-    
+
     /**
      * Update the specified resource in storage.
      */
@@ -39,31 +39,43 @@ class Admin_panel_settingsController extends Controller
     {
         try {
             $com_code = auth()->user()->com_code;
-            $dataToUpdate['company_name'] = $request->input('company_name');
-            $dataToUpdate['phones'] = $request->input('phones');
-            $dataToUpdate['address'] = $request->input('address');
-            $dataToUpdate['email'] = $request->input('email');
-            $dataToUpdate['after_miniute_calculate_delay'] = $request->input('after_miniute_calculate_delay');
-            $dataToUpdate['after_miniute_calculate_early_departure'] = $request->input('after_miniute_calculate_early_departure');
-            $dataToUpdate['after_miniute_quarterday'] = $request->input('after_miniute_quarterday');
-            $dataToUpdate['after_time_half_daycut'] = $request->input('after_time_half_daycut');
-            $dataToUpdate['after_time_allday_daycut'] = $request->input('after_time_allday_daycut');
-            $dataToUpdate['monthly_vacation_balance'] = $request->input('monthly_vacation_balance');
-            $dataToUpdate['after_days_begin_vacation'] = $request->input('after_days_begin_vacation');
-            $dataToUpdate['first_balance_begin_vacation'] = $request->input('first_balance_begin_vacation');
+            $data = Admin_panel_settings::select('image')->where('com_code', $com_code)->first();
+            
+            $dataToUpdate['company_name'] = $request->company_name;
+            $dataToUpdate['phones'] = $request->phones;
+            $dataToUpdate['address'] = $request->address;
+            $dataToUpdate['email'] = $request->email;
+            $dataToUpdate['after_miniute_calculate_delay'] = $request->after_miniute_calculate_delay;
+            $dataToUpdate['after_miniute_calculate_early_departure'] = $request->after_miniute_calculate_early_departure;
+            $dataToUpdate['after_miniute_quarterday'] = $request->after_miniute_quarterday;
+            $dataToUpdate['after_time_half_daycut'] = $request->after_time_half_daycut;
+            $dataToUpdate['after_time_allday_daycut'] = $request->after_time_allday_daycut;
+            $dataToUpdate['monthly_vacation_balance'] = $request->monthly_vacation_balance;
+            $dataToUpdate['after_days_begin_vacation'] = $request->after_days_begin_vacation;
+            $dataToUpdate['first_balance_begin_vacation'] = $request->first_balance_begin_vacation;
             $dataToUpdate['sanctions_value_first_abcence'] = $request->sanctions_value_first_abcence;
             $dataToUpdate['sanctions_value_second_abcence'] = $request->sanctions_value_second_abcence;
             $dataToUpdate['sanctions_value_third_abcence'] = $request->sanctions_value_third_abcence;
             $dataToUpdate['sanctions_value_fourth_abcence'] = $request->sanctions_value_fourth_abcence;
+            //// Uploading The image/logo of the company 
+            if ($request->has('image')) {
+                $request->validate([
+                    'image' => 'required|mimes:png,jpg,jpeg|max:2000'
+                ]);
+                $file_path = uploadImage('assets/admin/uploads', $request->image);
+                $dataToUpdate['image'] = $file_path;
+                
+                if (file_exists('assets/admin/uploads/' . $data['image']) and !empty($data['image'])) {
+                    unlink('assets/admin/uploads/' . $data['image']);
+                }
+            }
             $dataToUpdate['updated_by'] = auth()->user()->id;
-            
+
             Admin_panel_settings::where(['com_code' => $com_code])->update($dataToUpdate);
-            
+
             return redirect()->route('admin_panel_settings.index')->with(['success' => 'تم تعديل البيانات بنجاح']);
-            
         } catch (\Exception $ex) {
-            return redirect()->back()->with(['error' => 'عفواً حدث خطأ!'])->withInput();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ!' . $ex->getMessage()])->withInput();
         }
     }
-
 }

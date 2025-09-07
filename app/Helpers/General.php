@@ -16,6 +16,13 @@ function get_cols_where_p($model = null, $columns_names = array(), $where = arra
     return $data;
 }
 
+/*get some cols by pagination table */
+function get_cols_where_p_order2($model = null, $columns_names = array(), $where = array(), $order_field1 = "id", $order_type1 = "DESC", $order_field2 = "id", $order_type2 = "DESC", $pagination_counter = 13)
+{
+    $data = $model::select($columns_names)->where($where)->orderby($order_field1, $order_type1)->orderby($order_field2, $order_type2)->paginate($pagination_counter);
+    return $data;
+}
+
 /*get some cols by pagination table where 2 */
 function get_cols_where2_p($model = null, $columns_names = array(), $where = array(), $where2field = null, $where2operator = null, $where2value = null, $order_field = "id", $order_type = "DESC", $pagination_counter = 13)
 {
@@ -106,4 +113,10 @@ function get_sum_where($model = null, $field_name = null, $where = array())
 {
     $sum = $model::where($where)->sum($field_name);
     return $sum;
+}
+
+function get_count_where($model = null, $where = array())
+{
+    $counter = $model::where($where)->count();
+    return $counter;
 }

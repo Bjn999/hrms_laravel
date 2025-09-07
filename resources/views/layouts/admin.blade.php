@@ -8,7 +8,10 @@
 
         <title> @yield('title') </title>
         <!-- Font Awesome Icons -->
-        <link rel="stylesheet" href="{{url('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
+        {{-- <link rel="stylesheet" href="{{url('assets/admin/plugins/fontawesome-free/css/all.min.css')}}"> --}}
+        <!-- Fontawesome -->
+        <script src="https://kit.fontawesome.com/1bc0535d43.js" crossorigin="anonymous"></script>
+
         <!-- Theme style -->
         <link rel="stylesheet" href="{{url('assets/admin/dist/css/adminlte.min.css')}}">
         
@@ -17,7 +20,9 @@
         <link rel="stylesheet" href="{{url('assets/admin/css/mycustomstyle.css')}}">
         
         <!-- SweetAlert 2 -->
-        {{-- <link rel="stylesheet" href="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.css')}}"> --}}
+        <link rel="stylesheet" href="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.css')}}">
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{url('assets\admin\plugins\toastr\toastr.css')}}">
 
         @yield('css')
 
@@ -38,8 +43,9 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="/hrms_laravel" class="brand-link">
-            <img src="{{url('assets/admin/dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                style="opacity: .8">
+            {{-- <img src="{{url('assets/admin/dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" --}}
+            <img src="{{url('assets/admin/imgs/system_logo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                style="opacity: .8; background-color: white">
             <span class="brand-text font-weight-light">HRMS</span>
             </a>
 
@@ -71,10 +77,10 @@
         
         {{-- SweetAlert 2 --}}
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        {{-- <script src="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
-        <script src="{{url('assets/admin/plugins/sweetalert2/sweetalert2.all.js')}}"></script>
-        <script src="{{url('assets/admin/plugins/sweetalert2/sweetalert2.all.min.js')}}"></script> --}}
+        {{-- <script src="{{ url('assets/admin/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
+        
+        {{-- Toastr --}}
+        {{-- <script src="{{url('assets/admin/plugins/toastr/toastr.min.js')}}"></script> --}}
         
         @yield('script')
     </body>

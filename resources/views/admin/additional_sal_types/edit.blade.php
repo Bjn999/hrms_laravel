@@ -9,7 +9,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-<a href="{{ route('additionalsaltypes.index') }}">أنواع الإضافة للراتب</a>
+<a href="{{ route('additionalsaltypes.index') }}">أنواع المكافئات للراتب</a>
 @endsection
 
 @section('contentheaderactive')
@@ -22,7 +22,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title card_title_center">
-                تعديل نوع الإضافة للراتب
+                تعديل نوع مكافئة المالية للراتب
             </h3>
         </div>
         <div class="card-body">

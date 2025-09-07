@@ -27,7 +27,7 @@ class Finance_calendersController extends Controller
         $com_code = auth()->user()->com_code;
         // $data = Finance_calenders::select('*')->where(["com_code" => $com_code])->orderby('finance_yr', 'DESC')->paginate(PAGINATION_COUNTER);
         $data = get_cols_where_p(new Finance_calenders,array("*"), array("com_code" => $com_code), "id", "DESC", P_C);
-        $checkDataOpenCounter = Finance_calenders::where(['is_open' => 1])->count();
+        $checkDataOpenCounter = Finance_calenders::where(["com_code" => $com_code, 'is_open' => 1])->count();
         return view('admin.finance_calenders.index', ['data' => $data, 'checkdataopen' => $checkDataOpenCounter]);
     }
 
@@ -47,17 +47,18 @@ class Finance_calendersController extends Controller
     {
         //
         try {
+            // dd($request->input('finance_yr'));
             DB::beginTransaction();
-            $datayoInsert['finance_yr'] = $request->finance_yr;
-            $datayoInsert['finance_yr_desc'] = $request->finance_yr_desc;
-            $datayoInsert['start_date'] = $request->start_date;
-            $datayoInsert['end_date'] = $request->end_date;
-            $datayoInsert['added_by'] = auth()->user()->id;
-            $datayoInsert['com_code'] = auth()->user()->com_code;
-            $flag = Finance_calenders::insert($datayoInsert);
+            $datatoInsert['finance_yr'] = $request->finance_yr;
+            $datatoInsert['finance_yr_desc'] = $request->finance_yr_desc;
+            $datatoInsert['start_date'] = $request->start_date;
+            $datatoInsert['end_date'] = $request->end_date;
+            $datatoInsert['added_by'] = auth()->user()->id;
+            $datatoInsert['com_code'] = auth()->user()->com_code;
+            $flag = Finance_calenders::insert($datatoInsert);
             
             if ($flag) {
-                $dataParent = Finance_calenders::select('id')->where($datayoInsert)->first();
+                $dataParent = Finance_calenders::select('id')->where($datatoInsert)->first();
 
                 $startDate = new DateTime($request->start_date); 
                 $endDate = new DateTime($request->end_date);
@@ -69,7 +70,7 @@ class Finance_calendersController extends Controller
                     $monthName_en = $date->format('F');
                     $dataParentmonth = Monthes::select('id')->where(['name_en' => $monthName_en])->first();
                     $dataMonth['month_id'] = $dataParentmonth['id'];
-                    $dataMonth['finance_yr'] = $datayoInsert['finance_yr'];
+                    $dataMonth['finance_yr'] = $datatoInsert['finance_yr'];
                     $dataMonth['start_date_m'] = date('Y-m-01', strtotime($date->format('Y-m-d')));
                     $dataMonth['end_date_m'] = date('Y-m-t', strtotime($date->format('Y-m-d')));
                     $dataMonth['year_and_month'] = date('Y-m', strtotime($date->format('Y-m-d')));
@@ -82,8 +83,8 @@ class Finance_calendersController extends Controller
                     $dataMonth['updated_at'] = date('Y-m-d H:i:s');
                     $dataMonth['start_date_for_pasma'] = date('Y-m-01', strtotime($date->format('Y-m-d')));
                     $dataMonth['end_date_for_pasma'] = date('Y-m-t', strtotime($date->format('Y-m-d')));
-                    Finance_months_periods::insert($dataMonth);
 
+                    Finance_months_periods::insert($dataMonth);
                 }
             }
 
@@ -110,9 +111,10 @@ class Finance_calendersController extends Controller
     public function edit($id)
     {
         //
-        $data = Finance_calenders::select('*')->where(['id' => $id])->first();
+        $com_code = auth()->user()->com_code;
+        $data = Finance_calenders::select('*')->where(['id' => $id, 'com_code' => $com_code])->first();
         if (empty($data)) {
-            return redirect()->back()->with(['error' => 'عفواً حدث خطأ']);
+            return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
         }
         if ($data['is_open'] != 0) {
             return redirect()->back()->with(['error' => 'عفواً لا يمكن تعديل السنة المالية في هذه الحالة']);
@@ -128,9 +130,10 @@ class Finance_calendersController extends Controller
     {
         //
         try {
-            $data = Finance_calenders::select('*')->where(['id' => $id])->first();
+            $com_code = auth()->user()->com_code;
+            $data = Finance_calenders::select('*')->where(['id' => $id, 'com_code' => $com_code])->first();
             if (empty($data)) {
-                return redirect()->back()->with(['error' => 'عفواً حدث خطأ']);
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
             }
             if ($data['is_open'] != 0) {
                 return redirect()->back()->with(['error' => 'عفواً لا يمكن تعديل السنة المالية في هذه الحالة'])->withInput();
@@ -152,10 +155,11 @@ class Finance_calendersController extends Controller
             $dataToUpdate['end_date'] = $request->end_date;
             $dataToUpdate['updated_by'] = auth()->user()->id;
             $flag = Finance_calenders::where(['id' => $id])->update($dataToUpdate);
+
             if ($flag) {
                 if ($data['start_date'] != $request->start_date or $data['end_date'] != $request->end_date) {
                     $flagDelete = Finance_months_periods::where(['finance_calenders_id' => $id])->delete();
-                    if ($flagDelete) {        
+                    if ($flagDelete) {
                         $startDate = new DateTime($request->start_date); 
                         $endDate = new DateTime($request->end_date);
                         $dateInterval = new DateInterval('P1M');

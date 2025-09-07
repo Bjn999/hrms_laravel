@@ -128,21 +128,111 @@
               <a href="{{ route('additionalsaltypes.index') }}" class="nav-link {{request()->is('admin/additionalSalTypes*') ? 'active' : ''}} ">
                 <i class="{{request()->is('admin/additionalSalTypes*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
-                <p>أنواع الإضافة للراتب</p>
+                <p>أنواع المكافئات المالية</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('discountsaltypes.index') }}" class="nav-link {{request()->is('admin/discountSalTypes*') ? 'active' : ''}} ">
                 <i class="{{request()->is('admin/discountSalTypes*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
-                <p>أنواع الخصم للراتب</p>
+                <p>أنواع الخصومات المالية</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('allowances.index') }}" class="nav-link {{request()->is('admin/allowances*') ? 'active' : ''}} ">
                 <i class="{{request()->is('admin/allowances*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
-                <p>أنواع البدلات للراتب</p>
+                <p>أنواع البدلات</p>
+              </a>
+            </li>
+            
+          </ul>
+        </li>
+        <li class="nav-item has-treeview {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') ) ? 'menu-open' : '' }}">
+          <a href="#" class="nav-link {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') ) ? 'active' : '' }}">
+            {{-- <i class="nav-icon fas fa-user"></i> --}}
+            <i class="nav-icon fas fa-money-bill"></i>
+            <p>
+              قائمة الأجور والرواتب
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>السجلات الرئيسية للرواتب</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalarysanction.index') }}" class="nav-link {{request()->is('admin/mainsalarysanction*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalarysanction*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>جزاءات الأيام</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryabsence.index') }}" class="nav-link {{request()->is('admin/mainsalaryabsence*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryabsence*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>غياب الأيام</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryaddition.index') }}" class="nav-link {{request()->is('admin/mainsalaryaddition*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryaddition*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>إضافي الأيام</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalarydiscount.index') }}" class="nav-link {{request()->is('admin/mainsalarydiscount*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalarydiscount*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>الخصومات المالية</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryreward.index') }}" class="nav-link {{request()->is('admin/mainsalaryreward*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryreward*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>المكافئات المالية</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>البدلات المتغيرة</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>فواتير التليفونات</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>السلف الشهرية</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>السلف المستدامة</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+                {{-- <i class="nav-icon fas fa-cogs"></i> --}}
+                <p>رواتب الموظفين مفصلة</p>
               </a>
             </li>
             

@@ -43,7 +43,7 @@
 <body class="hold-transition login-page" style="background-size: cover; background-image: url('{{ url('assets/admin/imgs/login.jpg') }}');">
 <div class="login-box">
   <div class="login-logo">
-    <b>HR</b>MS
+    <span style="font-size: 130%;">BJN</span><b>HR</b>MS
   </div>
   <!-- /.login-logo -->
   <div class="card">

@@ -26,7 +26,7 @@ class Finance_calendersRequest extends FormRequest
             'finance_yr' => 'required|unique:finance_calenders',
             'finance_yr_desc' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required',
+            'end_date' => 'required|after:start_date',
         ];
     }
 
@@ -38,6 +38,7 @@ class Finance_calendersRequest extends FormRequest
             'finance_yr_desc.required' => 'وصف السنة المالية مطلوبة',
             'start_date.required' => 'تاريخ بداية السنة المالية مطلوبة',
             'end_date.required' => 'تاريخ نهاية السنة المالية مطلوبة',
+            'end_date.after' => 'تاريخ نهاية السنة يجب ان تكون بعد تاريخ بداية السنة',
         ];
     }
 }
