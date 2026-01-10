@@ -22,7 +22,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-<a href="{{ route('mainsalaryaddition.index') }}">إضافي الأيام</a>
+<a href="{{ route('mainsalaryloan.index') }}">السلف الشهرية</a>
 @endsection
 
 @section('contentheaderactive')
@@ -35,23 +35,23 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title card_title_center">
-                بيانات إضافي الأيام برواتب الشهر المالي ({{ $financeMonth_data['month']['name'] }} لسنة {{ $financeMonth_data['finance_yr'] }})
+                بيانات السلف الشهرية للرواتب للشهر المالي ({{ $financeMonth_data['month']['name'] }} لسنة {{ $financeMonth_data['finance_yr'] }})
             </h3>
         </div>
         @if($financeMonth_data['is_open'] == 1)
-        <button class="btn btn-md btn-success col-md-2 m-1" data-toggle="modal" data-target="#add_additionModal">
+        <button class="btn btn-md btn-success col-md-2 m-1" data-toggle="modal" data-target="#add_loanModal">
             إضافة جديد
             <i class="fas fa-plus ml-3"></i>
         </button>
         @endif
-        <form method="POST" action="{{ route('mainsalaryaddition.printSearch') }}" target="_blank">
+        <form method="POST" action="{{ route('mainsalaryloan.printSearch') }}" target="_blank">
             @csrf
             <input type="hidden" id="finance_month_period_id" name="finance_month_period_id" value="{{ $financeMonth_data['id'] }}" />
             <div class="row" style="padding: 0 5px">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="employee_code_search_addition">بحث برقم الموظف:</label>
-                        <select class="form-control select2" id="employee_code_search_addition" name="employee_code_search_addition">
+                        <label for="employee_code_search_loan">بحث برقم الموظف:</label>
+                        <select class="form-control select2" id="employee_code_search_loan" name="employee_code_search_loan">
                             <option selected value="all">غير محدد</option>
                             @if (isset($employees_for_search) and !empty($employees_for_search))
                             @foreach ($employees_for_search as $info)
@@ -63,8 +63,8 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="is_archived_search_addition">بحث بالحالة:</label>
-                        <select class="form-control" id="is_archived_search_addition" name="is_archived_search_addition">
+                        <label for="is_archived_search_loan">بحث بالحالة:</label>
+                        <select class="form-control" id="is_archived_search_loan" name="is_archived_search_loan">
                             <option selected value="all">غير محدد</option>
                             <option value="1">مؤرشف</option>
                             <option value="0">غير مؤرشف (مفتوح)</option>
@@ -86,8 +86,7 @@
             <table id="example2" class="table table-bordered table-hover text-center">
                 <thead class="custom_thead">
                     <th style="vertical-align: middle"> اسم الموظف </th>
-                    <th style="vertical-align: middle"> عدد الأيام </th>
-                    <th style="vertical-align: middle"> قيمة الإضافي </th>
+                    <th style="vertical-align: middle"> قيمة السلفة </th>
                     <th style="vertical-align: middle"> تاريخ الاضافة </th>
                     <th style="vertical-align: middle"> تاريخ التحديث </th>
                     <th style="vertical-align: middle"> الحالة </th>
@@ -114,15 +113,6 @@
                                 لا توجد ملاحظة
                             </span>
                             @endif
-                        </td>
-                        <td style="vertical-align: middle">
-                            @if($info->value == 1)
-                            يوم واحد
-                            @elseif ($info->value == 2)
-                            يومان
-                            @elseif ($info->value > 2 and $info->value < 11) {{ $info->value * 1 }} أيام @elseif ($info->value > 10)
-                                {{ $info->value * 1 }} يوم
-                                @endif
                         </td>
                         <td style="vertical-align: middle"> {{ $info->total * 1 }} رس </td>
                         <td style="vertical-align: middle">
@@ -162,8 +152,8 @@
                         </td>
                         <td style="vertical-align: middle">
 
-                            <button data-id="{{ $info->id }}" data-main_salary_employee_id="{{ $info->main_salary_employee_id  }}" class="btn btn-success edit_addition">تعديل</button>
-                            <button data-id="{{ $info->id }}" data-main_salary_employee_id="{{ $info->main_salary_employee_id  }}" class="btn btn-danger delete_addition">حذف</button>
+                            <button data-id="{{ $info->id }}" data-main_salary_employee_id="{{ $info->main_salary_employee_id  }}" class="btn btn-success edit_loan">تعديل</button>
+                            <button data-id="{{ $info->id }}" data-main_salary_employee_id="{{ $info->main_salary_employee_id  }}" class="btn btn-danger delete_loan">حذف</button>
 
                         </td>
                     </tr>
@@ -180,20 +170,20 @@
 </div>
 
 <!-- .addModal -->
-<div class="modal fade" id="add_additionModal">
+<div class="modal fade" id="add_loanModal">
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">اضافة إضافي للموظفين</h4>
+                <h4 class="modal-title">اضافة سلفة شهرية للموظفين</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
-            <div class="modal-body row" id="add_additionModalBody">
+            <div class="modal-body row" id="add_loanModalBody">
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="employee_code_add_addition">الموظف: <span class="text-danger">*</span></label>
-                        <select class="form-control select2" id="employee_code_add_addition" name="employee_code_add_addition">
+                        <label for="employee_code_add_loan">الموظف: <span class="text-danger">*</span></label>
+                        <select class="form-control select2" id="employee_code_add_loan" name="employee_code_add_loan">
                             <option selected value="">غير محدد</option>
                             @if (isset($employees) and !empty($employees))
                             @foreach ($employees as $info)
@@ -205,43 +195,38 @@
                 </div>
                 <div class="col-md-3 related_employee_add" style="display:none">
                     <div class="form-group">
-                        <label for="emp_sal_add_addition">راتب الموظف:</label>
-                        <input readonly type="text" class="form-control" name="emp_sal_add_addition" id="emp_sal_add_addition" value="">
+                        <label for="emp_sal_add_loan">راتب الموظف:</label>
+                        <input readonly type="text" class="form-control" name="emp_sal_add_loan" id="emp_sal_add_loan" value="">
                     </div>
                 </div>
                 <div class="col-md-3 related_employee_add" style="display:none">
                     <div class="form-group">
-                        <label for="day_price_add_addition">راتب اليوم للموظف:</label>
-                        <input readonly type="text" class="form-control" name="day_price_add_addition" id="day_price_add_addition" value="">
+                        <label for="day_price_add_loan">راتب اليوم للموظف:</label>
+                        <input readonly type="text" class="form-control" name="day_price_add_loan" id="day_price_add_loan" value="">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="value_add_addition">عدد ايام الإضافي: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="value_add_addition" name="value_add_addition" oninput="this.value = this.value.replace(/[^0-9.]/g, '')" value="">
+                        <label for="total_add_loan">اجمالي قيمة السلفة: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="total_add_loan" name="total_add_loan">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="total_add_addition">اجمالي قيمة الإضافي:</label>
-                        <input readonly type="text" class="form-control" id="total_add_addition" name="total_add_addition">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="notes_add_addition">ملاحظات:</label>
-                        <input type="text" class="form-control" id="notes_add_addition" name="notes_add_addition" value="">
+                        <label for="notes_add_loan">ملاحظات:</label>
+                        <input type="text" class="form-control" id="notes_add_loan" name="notes_add_loan" value="">
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group mx-auto col-md-2">
-                        <button type="submit" class="form-control btn-primary" id="do_add_addition" value="">إضافة</button>
+                        <button type="submit" class="form-control btn-primary" id="do_add_loan" value="">إضافة</button>
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer justify-content-between bg-secondary">
                 <button type="button" class="btn btn-outline-light" data-dismiss="modal">إغلاق</button>
+                {{-- <button type="button" class="btn btn-outline-light">Save changes</button> --}}
             </div>
         </div>
         <!-- /.modal-content -->
@@ -251,15 +236,15 @@
 <!-- /.addModal -->
 
 <!-- .editModal -->
-<div class="modal fade" id="edit_additionModal">
+<div class="modal fade" id="edit_loanModal">
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">تعديل إضافي الموظف</h4>
+                <h4 class="modal-title">تعديل سلفة شهرية للموظف</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
-            <div class="modal-body row" id="edit_additionModalBody">
+            <div class="modal-body row" id="edit_loanModalBody">
 
             </div>
             <div class="modal-footer justify-content-between bg-secondary">
@@ -279,55 +264,36 @@
 
 <script>
     $(document).ready(function() {
-        //Initialize Select2 Elements
+        //Initialize Select2 Elements 
         $('.select2').select2({
             theme: 'bootstrap4'
         });
 
-        // For addaddition Bring and display the salary and day praice for selected employee 
-        $(document).on("change", "#employee_code_add_addition", function(e) {
+        // For addloan Bring and display the salary and day praice for selected employee 
+        $(document).on("change", "#employee_code_add_loan", function(e) {
             if ($(this).val() == "") {
                 $('.related_employee_add').hide();
-                $('#emp_sal_add_addition').val(0);
-                $('#day_price_add_addition').val(0);
+                $('#emp_sal_add_loan').val(0);
+                $('#day_price_add_loan').val(0);
             } else {
-                var sal = $('#employee_code_add_addition option:selected').data('salary');
-                var d_price = $('#employee_code_add_addition option:selected').data('day_price');
+                var sal = $('#employee_code_add_loan option:selected').data('salary');
+                var d_price = $('#employee_code_add_loan option:selected').data('day_price');
                 $('.related_employee_add').show();
-                $('#emp_sal_add_addition').val(sal * 1);
-                $('#day_price_add_addition').val(d_price * 1);
+                $('#emp_sal_add_loan').val(sal * 1);
+                $('#day_price_add_loan').val(d_price * 1);
             }
-            var value_add_addition = $('#value_add_addition').val();
-            if (value_add_addition == '') {
-                value_add_addition = 0;
-            }
-            var day_price_add_addition = $('#day_price_add_addition').val();
-
-            $('#total_add_addition').val(value_add_addition * day_price_add_addition);
         });
 
-        // For addaddition Set and write the total value after write additions days number 
-        $(document).on("input", "#value_add_addition", function(e) {
-            var value_add_addition = $(this).val();
-            if (value_add_addition == '') {
-                value_add_addition = 0;
-            }
-            var day_price_add_addition = $('#day_price_add_addition').val();
-
-            $('#total_add_addition').val(value_add_addition * day_price_add_addition);
-        });
-
-        // Check the fields values and add the addition for the employee 
-        $(document).on("click", "#do_add_addition", function(e) {
+        // Check the fields values and add the loan for the employee 
+        $(document).on("click", "#do_add_loan", function(e) {
             var finance_month_period_id = $('#finance_month_period_id').val();
-            var employee_code_addaddition = $('#employee_code_add_addition').val();
-            var sal_addaddition = $('#emp_sal_add_addition').val();
-            var d_price_addaddition = $('#day_price_add_addition').val();
-            var value_addaddition = $('#value_add_addition').val();
-            var total_addaddition = $('#total_add_addition').val();
-            var notes_addaddition = $('#notes_add_addition').val();
+            var employee_code_add_loan = $('#employee_code_add_loan').val();
+            //var sal_add_loan = $('#emp_sal_add_loan').val();
+            var d_price_add_loan = $('#day_price_add_loan').val();
+            var total_add_loan = $('#total_add_loan').val();
+            var notes_add_loan = $('#notes_add_loan').val();
 
-            if (employee_code_addaddition == "") {
+            if (employee_code_add_loan == "") {
                 Swal.fire({
                     title: "من فضلك اختر الموظف"
                     , text: ""
@@ -335,21 +301,21 @@
                 }).then((res) => {
                     if (res.isConfirmed) {
                         setTimeout(() => {
-                            $('#employee_code_edit_addition').focus();
+                            $('#employee_code_edit_loan').focus();
                         }, 500);
                     }
                 });
                 return 0;
             }
-            if (value_addaddition == "" || value_addaddition == 0) {
+            if (total_add_loan == "" || total_add_loan == 0) {
                 Swal.fire({
-                    title: "من فضلك ادخل عدد أيام الإضافي"
+                    title: "من فضلك ادخل قيمة السلفة"
                     , text: ""
                     , icon: "error"
                 }).then((res) => {
                     if (res.isConfirmed) {
                         setTimeout(() => {
-                            $('#total_add_addition').focus();
+                            $('#total_add_loan').focus();
                         }, 500);
                     }
                 });
@@ -357,18 +323,18 @@
             }
 
             jQuery.ajax({
-                url: "{{ route('mainsalaryaddition.checkExist') }}"
+                url: "{{ route('mainsalaryloan.checkExist') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false
                 , data: {
                     "_token": '{{ csrf_token() }}'
-                    , employee_code: employee_code_addaddition
+                    , employee_code: employee_code_add_loan
                     , finance_month_period_id: finance_month_period_id
                 }
                 , success: function(data) {
                     if (data == "exists") {
-                        var res = confirm('يوجد إضافي مسجل من قبل لهذا الموظف هل تريد الاستمرار؟');
+                        var res = confirm('يوجد بدل مسجل من قبل لهذا الموظف هل تريد الاستمرار؟');
                         if (res == true) {
                             var resFlag = true;
                         } else {
@@ -381,25 +347,24 @@
                     if (resFlag) {
                         $('#loadingModal').modal('show');
                         jQuery.ajax({
-                            url: "{{ route('mainsalaryaddition.store') }}"
+                            url: "{{ route('mainsalaryloan.store') }}"
                             , type: 'post'
                             , 'dataType': 'json'
                             , cache: false
                             , data: {
                                 "_token": '{{ csrf_token() }}'
-                                , employee_code: employee_code_addaddition
+                                , employee_code: employee_code_add_loan
                                 , finance_month_period_id: finance_month_period_id
-                                , salary: sal_addaddition
-                                , day_price: d_price_addaddition
-                                , value: value_addaddition
-                                , total: total_addaddition
-                                , notes: notes_addaddition
+                                //, salary: sal_add_loan
+                                , day_price: d_price_add_loan
+                                , total: total_add_loan
+                                , notes: notes_add_loan
                             }
                             , success: function(data) {
                                 if (data == 'success') {
-                                    // Hide Add addition Modal 
-                                    $('#add_additionModal').modal('hide');
-                                    // Show Add addition Success Toast 
+                                    // Hide Add loan Modal 
+                                    $('#add_loanModal').modal('hide');
+                                    // Show Add loan Success Toast 
                                     const Toast = Swal.mixin({
                                         toast: true
                                         , position: "top-end"
@@ -413,13 +378,13 @@
                                     });
                                     Toast.fire({
                                         icon: "success"
-                                        , title: "تم اضافة الإضافي بنجاح"
+                                        , title: "تم اضافة السلفة بنجاح"
                                     });
 
                                     setTimeout(function() {
                                         $('#loadingModal').modal('hide');
                                     }, 1000);
-                                    // Update additions List 
+                                    // Update loans List 
                                     ajax_search();
                                 } else {
                                     setTimeout(function() {
@@ -441,14 +406,14 @@
             , });
         });
 
-        // Delete addition Button  
-        $(document).on("click", ".delete_addition", function(e) {
-            //var res = confirm('هل انت متأكد من حذف هذا الإضافي؟');
+        // Delete loan Button  
+        $(document).on("click", ".delete_loan", function(e) {
+            //var res = confirm('هل انت متأكد من حذف هذا السلفة؟');
             //if (!res) {
             //    return false;
             //}
             Swal.fire({
-                title: "هل انت متأكد من حذف هذا الإضافي"
+                title: "هل انت متأكد من حذف هذا السلفة"
                 , confirmButtonText: "نعم"
                 , showCancelButton: true
                 , cancelButtonText: "لا"
@@ -463,7 +428,7 @@
                     $('#loadingModal').modal('show');
 
                     jQuery.ajax({
-                        url: "{{ route('mainsalaryaddition.delete') }}"
+                        url: "{{ route('mainsalaryloan.delete') }}"
                         , type: 'post'
                         , 'dataType': 'json'
                         , cache: false
@@ -490,48 +455,48 @@
             });
         });
 
-        // For editaddition Bring and display the salary and day praice for selected employee 
-        $(document).on("change", "#employee_code_edit_addition", function(e) {
+        // For editloan Bring and display the salary and day praice for selected employee 
+        $(document).on("change", "#employee_code_edit_loan", function(e) {
             if ($(this).val() == "") {
                 $('.related_employee_edit').hide();
-                $('#emp_sal_edit_addition').val(0);
-                $('#day_price_edit_addition').val(0);
+                $('#emp_sal_edit_loan').val(0);
+                $('#day_price_edit_loan').val(0);
             } else {
-                var sal = $('#employee_code_edit_addition option:selected').data('salary');
-                var d_price = $('#employee_code_edit_addition option:selected').data('day_price');
+                var sal = $('#employee_code_edit_loan option:selected').data('salary');
+                var d_price = $('#employee_code_edit_loan option:selected').data('day_price');
                 $('.related_employee_edit').show();
-                $('#emp_sal_edit_addition').val(sal * 1);
-                $('#day_price_edit_addition').val(d_price * 1);
+                $('#emp_sal_edit_loan').val(sal * 1);
+                $('#day_price_edit_loan').val(d_price * 1);
             }
-            var value_edit_addition = $('#value_edit_addition').val();
-            if (value_edit_addition == '') {
-                value_edit_addition = 0;
+            var value_edit_loan = $('#value_edit_loan').val();
+            if (value_edit_loan == '') {
+                value_edit_loan = 0;
             }
-            var day_price_edit_addition = $('#day_price_edit_addition').val();
+            var day_price_edit_loan = $('#day_price_edit_loan').val();
 
-            $('#total_edit_addition').val(value_edit_addition * day_price_edit_addition);
+            $('#total_edit_loan').val(value_edit_loan * day_price_edit_loan);
         });
 
-        // For editaddition Set and write the total value after write additions days number 
-        $(document).on("input", "#value_edit_addition", function(e) {
-            var value_edit_addition = $(this).val();
-            if (value_edit_addition == '') {
-                value_edit_addition = 0;
+        // For editloan Set and write the total value after write loans days number 
+        $(document).on("input", "#value_edit_loan", function(e) {
+            var value_edit_loan = $(this).val();
+            if (value_edit_loan == '') {
+                value_edit_loan = 0;
             }
-            var day_price_edit_addition = $('#day_price_edit_addition').val();
+            var day_price_edit_loan = $('#day_price_edit_loan').val();
 
-            $('#total_edit_addition').val(value_edit_addition * day_price_edit_addition);
+            $('#total_edit_loan').val(value_edit_loan * day_price_edit_loan);
         });
 
-        // Edit addition Button 
-        $(document).on("click", ".edit_addition", function(e) {
+        // Edit loan Button 
+        $(document).on("click", ".edit_loan", function(e) {
             var id = $(this).data('id');
             var main_salary_employee_id = $(this).data('main_salary_employee_id');
             var finance_month_period_id = $('#finance_month_period_id').val();
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryaddition.edit') }}"
+                url: "{{ route('mainsalaryloan.edit') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false
@@ -545,8 +510,8 @@
                     setTimeout(function() {
                         $('#loadingModal').modal('hide');
                     }, 500);
-                    $("#edit_additionModalBody").html(data);
-                    $("#edit_additionModal").modal('show');
+                    $("#edit_loanModalBody").html(data);
+                    $("#edit_loanModal").modal('show');
                     //$('.select2').select2();
                     $('.select2').select2({
                         theme: 'bootstrap4'
@@ -558,19 +523,18 @@
             });
         });
 
-        // Edit the addition for the employee 
-        $(document).on("click", "#do_edit_addition", function(e) {
+        // Edit the loan for the employee 
+        $(document).on("click", "#do_edit_loan", function(e) {
             var id = $(this).data('id');
             var main_salary_employee_id = $(this).data('main_salary_employee_id');
             var finance_month_period_id = $('#finance_month_period_id').val();
-            var employee_code_editaddition = $('#employee_code_edit_addition').val();
-            var sal_editaddition = $('#emp_sal_edit_addition').val();
-            var d_price_editaddition = $('#day_price_edit_addition').val();
-            var value_editaddition = $('#value_edit_addition').val();
-            var total_editaddition = $('#total_edit_addition').val();
-            var notes_editaddition = $('#notes_edit_addition').val();
+            var employee_code_edit_loan = $('#employee_code_edit_loan').val();
+            var sal_edit_loan = $('#emp_sal_edit_loan').val();
+            var d_price_edit_loan = $('#day_price_edit_loan').val();
+            var total_edit_loan = $('#total_edit_loan').val();
+            var notes_edit_loan = $('#notes_edit_loan').val();
 
-            if (employee_code_editaddition == "") {
+            if (employee_code_edit_loan == "") {
                 Swal.fire({
                     title: "من فضلك اختر الموظف"
                     , text: ""
@@ -578,21 +542,21 @@
                 }).then((res) => {
                     if (res.isConfirmed) {
                         setTimeout(() => {
-                            $('#employee_code_edit_addition').focus();
+                            $('#employee_code_edit_loan').focus();
                         }, 500);
                     }
                 });
                 return 0;
             }
-            if (value_editaddition == "" || value_editaddition == 0) {
+            if (total_edit_loan == "" || total_edit_loan == 0) {
                 Swal.fire({
-                    title: "من فضلك ادخل ادخل أيام الإضافي"
+                    title: "من فضلك ادخل قيمة السلفة"
                     , text: ""
                     , icon: "error"
                 }).then((res) => {
                     if (res.isConfirmed) {
                         setTimeout(() => {
-                            $('#total_edit_addition').focus();
+                            $('#total_add_loan').focus();
                         }, 500);
                     }
                 });
@@ -601,7 +565,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryaddition.update') }}"
+                url: "{{ route('mainsalaryloan.update') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false
@@ -610,17 +574,16 @@
                     , id: id
                     , main_salary_employee_id: main_salary_employee_id
                     , finance_month_period_id: finance_month_period_id
-                    , employee_code: employee_code_editaddition
-                    , day_price: d_price_editaddition
-                    , value: value_editaddition
-                    , total: total_editaddition
-                    , notes: notes_editaddition
+                    , employee_code: employee_code_edit_loan
+                    , day_price: d_price_edit_loan
+                    , total: total_edit_loan
+                    , notes: notes_edit_loan
                 }
                 , success: function(data) {
                     if (data == 'success') {
-                        // Hide Add addition Modal 
-                        $('#edit_additionModal').modal('hide');
-                        // Show Add addition Success Toast 
+                        // Hide Add loan Modal 
+                        $('#edit_loanModal').modal('hide');
+                        // Show Add loan Success Toast 
                         const Toast = Swal.mixin({
                             toast: true
                             , position: "top-end"
@@ -634,13 +597,13 @@
                         });
                         Toast.fire({
                             icon: "success"
-                            , title: "تم تعديل الإضافي بنجاح"
+                            , title: "تم تعديل السلفة بنجاح"
                         });
 
                         setTimeout(function() {
                             $('#loadingModal').modal('hide');
                         }, 1000);
-                        // Update additions List on the screen 
+                        // Update loans List on the screen 
                         ajax_search();
                     } else {
                         setTimeout(function() {
@@ -656,23 +619,20 @@
             });
         });
 
-        $(document).on("change", "#employee_code_search_addition", function(e) {
+        $(document).on("change", "#employee_code_search_loan", function(e) {
             ajax_search();
         });
-        $(document).on("change", "#additions_type_search_addition", function(e) {
-            ajax_search();
-        });
-        $(document).on("change", "#is_archived_search_addition", function(e) {
+        $(document).on("change", "#is_archived_search_loan", function(e) {
             ajax_search();
         });
 
         function ajax_search() {
-            var employee_code = $('#employee_code_search_addition').val();
-            var is_archived = $('#is_archived_search_addition').val();
+            var employee_code = $('#employee_code_search_loan').val();
+            var is_archived = $('#is_archived_search_loan').val();
             var finance_month_period_id = $('#finance_month_period_id').val();
 
             jQuery.ajax({
-                url: "{{ route('mainsalaryaddition.showAjaxSearch') }}"
+                url: "{{ route('mainsalaryloan.showAjaxSearch') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false

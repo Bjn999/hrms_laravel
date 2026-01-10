@@ -38,7 +38,7 @@ class Main_salary_employee_rewardsController extends Controller
             }
         }
 
-        return view("admin.Main_salary_employee_rewards.index", ["data" => $data, 'finance_years' => $finance_years]);
+        return view("admin.main_salary_employee_rewards.index", ["data" => $data, 'finance_years' => $finance_years]);
     }
 
     //
@@ -66,7 +66,7 @@ class Main_salary_employee_rewardsController extends Controller
 
         $employees_for_search = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
 
-        return view('admin.Main_salary_employee_rewards.show', ['data' => $rewards_data, 'additional_types' => $additional_types, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
+        return view('admin.main_salary_employee_rewards.show', ['data' => $rewards_data, 'additional_types' => $additional_types, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
     }
 
     // Check If the employee has additions before for this finance month -> Ajax
@@ -84,7 +84,7 @@ class Main_salary_employee_rewardsController extends Controller
     }
 
     // Add addition for employee in a current finance month -> Ajax
-    public function rewardStore(Request $request)
+    public function store(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -117,7 +117,7 @@ class Main_salary_employee_rewardsController extends Controller
     }
 
     // Show Edit addition modalForm for employee in a current finance month -> Ajax 
-    public function rewardEdit(Request $request)
+    public function edit(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -147,7 +147,7 @@ class Main_salary_employee_rewardsController extends Controller
     }
 
     // Add addition for employee in a current finance month -> Ajax
-    public function rewardUpdate(Request $request)
+    public function update(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -177,7 +177,7 @@ class Main_salary_employee_rewardsController extends Controller
     }
 
     // Delete addition for employee in a current finance month -> Ajax 
-    public function rewardDelete(Request $request)
+    public function delete(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -244,7 +244,7 @@ class Main_salary_employee_rewardsController extends Controller
             $data = Main_salary_employee_reward::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
                 ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_months_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
 
-            return view('admin.Main_salary_employee_rewards.show_ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_rewards.show_ajax_search', ['data' => $data]);
         }
     }
 
@@ -289,7 +289,6 @@ class Main_salary_employee_rewardsController extends Controller
             $value3 = $is_archived;
         }
 
-        $other['value_sum'] = 0;
         $other['total_sum'] = 0;
         $data = Main_salary_employee_reward::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
             ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_months_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
@@ -297,12 +296,11 @@ class Main_salary_employee_rewardsController extends Controller
 
         if (!empty($data)) {
             foreach ($data as $info) {
-                $other['value_sum'] += $info->value;
                 $other['total_sum'] += $info->total;
             }
         }
 
-        return view('admin.Main_salary_employee_rewards.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
+        return view('admin.main_salary_employee_rewards.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
     }
 
     // Search Monthes By Finance year !! -> Ajax 
@@ -329,7 +327,7 @@ class Main_salary_employee_rewardsController extends Controller
                 }
             }
 
-            return view('admin.Main_salary_employee_rewards.ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_rewards.ajax_search', ['data' => $data]);
         }
     }
 }

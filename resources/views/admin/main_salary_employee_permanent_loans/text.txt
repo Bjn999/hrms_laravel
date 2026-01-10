@@ -1,0 +1,158 @@
+@extends('layouts.admin')
+
+@section('title')
+الأجور والرواتب
+@endsection
+
+@section('contentheader')
+قائمة الأجور والرواتب
+@endsection
+
+@section('contentheaderactivelink')
+<a href="{{ route('mainsalarypermanent_loan.index') }}">السلف المستديمة</a>
+@endsection
+
+@section('contentheaderactive')
+تعديل
+@endsection
+
+@section('content')
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title card_title_center">
+                تعديل بيانات الفرع
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (!@empty($p_loan_data) and !@empty($employees))
+
+            <form class action="{{ route('mainsalarypermanent_loan.update', $p_loan_data->id) }}" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="employee_code">الموظف: <span class="text-danger">*</span></label>
+                            <select required class="form-control select2" id="employee_code" name="employee_code">
+                                <option selected value="">غير محدد</option>
+                                @if (isset($employees) and !empty($employees))
+                                @foreach ($employees as $info)
+                                <option @if($info->employee_code == $p_loan_data['employee_code']) selected @endif value="{{ $info->employee_code }}" data-salary="{{ $info->emp_sal }}" data-day_price="{{ $info->day_price }}">({{ $info->employee_code }}) {{ $info->emp_name }}</option>
+                                @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 related_employee">
+                        <div class="form-group">
+                            <label for="emp_sal">راتب الموظف:</label>
+                            <input readonly type="text" class="form-control" name="emp_sal" id="emp_sal" value="{{ $p_loan_data['emp_sal'] * 1 }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4 related_employee">
+                        <div class="form-group">
+                            <label for="day_price">راتب اليوم للموظف: (رس)</label>
+                            <input readonly type="text" class="form-control" name="day_price" id="day_price" value="{{ $p_loan_data->employee->day_price * 1 }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="total">اجمالي قيمة السلفة: <span class="text-danger">*</span></label>
+                            <input required type="text" class="form-control valid_inp" id="total" name="total" value="{{ $p_loan_data['total'] * 1 }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="months_number">عدد الأشهر للأقساط: <span class="text-danger">*</span></label>
+                            <input required type="text" class="form-control" id="months_number" name="months_number" value="{{ $p_loan_data['months_number'] }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="monthly_installment_value">قيمة القسط الشهري:</label>
+                            <input readonly type="text" class="form-control" id="monthly_installment_value" name="monthly_installment_value" value="{{ $p_loan_data['monthly_installment_value'] * 1 }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="year_and_month_start_date">يبدأ السداد من تاريخ: <span class="text-danger">*</span></label>
+                            <input required type="date" min="{{ date("Y-m-d") }}" value="{{ $p_loan_data['year_and_month_start_date'] }}" class="form-control" id="year_and_month_start_date" name="year_and_month_start_date">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="total_remain">البلغ المتبقي: </label>
+                            <input readonly type="text" class="form-control" id="total_remain" name="total_remain" value="{{ $p_loan_data['total_remain'] * 1 }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="notes">ملاحظات:</label>
+                            <input type="text" class="form-control" id="notes" name="notes" value="{{ $p_loan_data['notes'] }}">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group mx-auto col-md-2">
+                            <button type="submit" class="form-control btn-primary">تعديل</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@else
+<p class="text-danger text-center font-weight-bold my-5">لا توجد بيانات لعرضها</p>
+@endif
+
+@endsection
+
+
+@section('script')
+<script>
+    // For editloan Bring and display the salary and day praice for selected employee 
+    $(document).on("change", "#employee_code", function(e) {
+        if ($(this).val() == "") {
+            $('.related_employee').hide();
+            $('#emp_sal').val(0);
+            $('#day_price').val(0);
+        } else {
+            var sal = $('#employee_code option:selected').data('salary');
+            var d_price = $('#employee_code option:selected').data('day_price');
+            $('.related_employee').show();
+            $('#emp_sal').val(sal * 1);
+            $('#day_price').val(d_price * 1);
+        }
+    });
+
+    function calculate_installment_value() {
+        var total = $('#total').val();
+        var months_number = $('#months_number').val();
+
+        if (total == "") {
+            total = 0
+        }
+        if (months_number == "") {
+            months_number = 0
+        }
+        if (total != 0 && months_number != 0) {
+            $monthly_value = parseFloat(total) / parseFloat(months_number);
+            // Put the monthly installment value in decimal numer with 2 places (XX.00) 
+            $('#monthly_installment_value').val($monthly_value.toFixed(2) * 1);
+        } else {
+            $('#monthly_installment_value').val(0);
+        }
+    }
+
+    $(document).on("input", "#total", function(e) {
+        calculate_installment_value();
+    });
+    $(document).on("input", "#months_number", function(e) {
+        calculate_installment_value();
+    });
+
+</script>
+@endsection

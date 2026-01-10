@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('main_salary_employees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('finance_month_id')->comment('كود الشهر المالي')->references('id')->on('finance_months_periods')->onUpdate('cascade');
+            $table->foreignId('finance_month_id')->comment('كود الشهر المالي')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('employee_code')->comment('كود الموضف');
             $table->string('emp_name', 300)->comment('اسم الموضف لحظة الراتب');
             $table->integer('is_sensitive_manager_data')->nullable()->default(0)->comment('هل الموظف ادارة عليا اي بيانات حساسة');

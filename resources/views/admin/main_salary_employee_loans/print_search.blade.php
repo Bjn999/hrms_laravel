@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> بحث بغياب الأيام الرواتب</title>
+    <title> بحث بسلف الرواتب</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="{{ url('assets/admin/css/bootstrap_rtl-v4.2.1/bootstrap.min.css')}}">
     <style>
@@ -51,9 +51,9 @@
                height: 30px;
                text-align: center;
                color: red;
-                  border-bottom: 2px solid black; 
-                  border-radius: 10px">
-                        بحث بغياب الأيام برواتب الشهر المالي ({{ $financeMonth_data['month']['name'] }} لسنة {{ $financeMonth_data['finance_yr'] }})
+               border-bottom: 2px solid black; 
+               border-radius: 10px">
+                        بحث بسلف الرواتب بالشهر المالي ({{ $financeMonth_data['month']['name'] }} لسنة {{ $financeMonth_data['finance_yr'] }})
                     </span>
                 </td>
             </tr>
@@ -105,11 +105,9 @@
         <thead style="background-color: lightblue">
 
             <th style="vertical-align: middle; width: 5%"> م </th>
-            <th style="vertical-align: middle; width: 30%"> الموظف </th>
-            {{-- <th style="vertical-align: middle; width: 5%"> رقم الموظف </th> --}}
-            <th style="vertical-align: middle; width: 10%"> عدد الأيام </th>
+            <th style="vertical-align: middle; width: 25%"> الموظف </th>
             <th style="vertical-align: middle; width: 10%"> اجمالي المبلغ </th>
-            <th style="vertical-align: middle; width: 15%"> التاريخ </th>
+            <th style="vertical-align: middle; width: 20%"> التاريخ </th>
             <th style="vertical-align: middle; width: 20%"> بواسطة </th>
             <th style="vertical-align: middle; width: 10%"> الحالة </th>
 
@@ -124,16 +122,6 @@
             <tr>
                 <td style="vertical-align: middle"> {{ $i }} </td>
                 <td style="vertical-align: middle"> {{ $info->employee_code }} - {{ $info->employee->emp_name }} </td>
-                {{-- <td style="vertical-align: middle"> {{ $info->employee_code }} </td> --}}
-                <td style="vertical-align: middle">
-                    @if($info->value == 1)
-                    يوم واحد
-                    @elseif ($info->value == 2)
-                    يومان
-                    @elseif ($info->value > 2 and $info->value < 11) {{ $info->value * 1 }} أيام @elseif ($info->value > 10)
-                        {{ $info->value * 1 }} يوم
-                        @endif
-                </td>
                 <td style="vertical-align: middle"> {{ $info->total * 1 }} رس </td>
                 <td style="vertical-align: middle">
                     @php
@@ -147,15 +135,6 @@
                     {{ $newTime }}
                 </td>
                 <td style="vertical-align: middle">
-                    {{-- @php
-                    $dt = new DateTime($info->created_at);
-                    $date = $dt->format("Y-m-d");
-                    $time = $dt->format("h:i");
-                    $newTime = $dt->format("A") == 'AM' ? 'صباحاً' : 'مساءاً';
-                    @endphp
-                    {{ $date }} <br />
-                    {{ $time }}
-                    {{ $newTime }} <br /> --}}
                     {{ $info->added->name }}
                 </td>
                 <td class="@if ($info->is_approved == 1) bg-success @else bg-info @endif" style="vertical-align: middle">
@@ -174,15 +153,6 @@
             <tr>
                 <td style="background-color:lightsalmon; font-weight: bold" colspan="2"> الاجمالي
 
-                </td>
-                <td style="background-color: lightgreen;" colspan="1">
-                    @if($totals['value_sum'] == 1)
-                    يوم واحد
-                    @elseif ($totals['value_sum'] == 2)
-                    يومين
-                    @elseif ($totals['value_sum'] > 2 and $totals['value_sum'] < 11) {{ $totals['value_sum'] * 1 }} أيام @elseif ($totals['value_sum']>= 11)
-                        {{ $totals['value_sum'] * 1 }} يوم
-                        @endif
                 </td>
                 <td style="background-color: lightgreen;" colspan="1">
                     {{ $totals['total_sum'] * 1 }} رس

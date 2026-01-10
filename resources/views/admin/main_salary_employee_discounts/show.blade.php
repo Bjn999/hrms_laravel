@@ -22,7 +22,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-<a href="{{ route('mainsalarydiscount.index') }}">الخصومات</a>
+<a href="{{ route('mainsalarydiscount.index') }}">الخصومات المالية</a>
 @endsection
 
 @section('contentheaderactive')
@@ -55,7 +55,7 @@
                             <option selected value="all">غير محدد</option>
                             @if (isset($employees_for_search) and !empty($employees_for_search))
                             @foreach ($employees_for_search as $info)
-                            <option value="{{ $info->employee_code }}" data-salary="{{ $info->emp_sal }}">({{ $info->employee_code }}) {{ $info->emp_name }}</option>
+                            <option value="{{ $info->employee_code }}">({{ $info->employee_code }}) {{ $info->emp_name }}</option>
                             @endforeach
                             @endif
                         </select>
@@ -191,7 +191,7 @@
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">اضافة إضافي للموظفين</h4>
+                <h4 class="modal-title">اضافة خصم للموظفين</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
@@ -270,7 +270,7 @@
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">تعديل إضافي الموظف</h4>
+                <h4 class="modal-title">تعديل خصم للموظف</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
@@ -392,7 +392,7 @@
                     if (resFlag) {
                         $('#loadingModal').modal('show');
                         jQuery.ajax({
-                            url: "{{ route('mainsalarydiscount.discountStore') }}"
+                            url: "{{ route('mainsalarydiscount.store') }}"
                             , type: 'post'
                             , 'dataType': 'json'
                             , cache: false
@@ -474,7 +474,7 @@
                     $('#loadingModal').modal('show');
 
                     jQuery.ajax({
-                        url: "{{ route('mainsalarydiscount.discountDelete') }}"
+                        url: "{{ route('mainsalarydiscount.delete') }}"
                         , type: 'post'
                         , 'dataType': 'json'
                         , cache: false
@@ -487,14 +487,14 @@
                         , success: function(data) {
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
-                            }, 1000);
+                            }, 500);
                             ajax_search();
                         }
                         , error: function(err) {
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
                             }, 1000);
-                            alert("عفواً حدث خطأ ما : Ajax_discountDelete");
+                            alert("عفواً حدث خطأ ما : Ajax_delete");
                         }
                     });
                 }
@@ -542,7 +542,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalarydiscount.discountEdit') }}"
+                url: "{{ route('mainsalarydiscount.edit') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false
@@ -553,7 +553,9 @@
                     , finance_month_period_id: finance_month_period_id
                 }
                 , success: function(data) {
-                    $('#loadingModal').modal('hide');
+                    setTimeout(function() {
+                        $('#loadingModal').modal('hide');
+                    }, 500);
                     $("#edit_discountModalBody").html(data);
                     $("#edit_discountModal").modal('show');
                     //$('.select2').select2();
@@ -562,7 +564,7 @@
                     });
                 }
                 , error: function(err) {
-                    alert("عفواً حدث خطأ ما : Ajax_discountEdit");
+                    alert("عفواً حدث خطأ ما : Ajax_edit");
                 }
             });
         });
@@ -625,7 +627,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalarydiscount.discountUpdate') }}"
+                url: "{{ route('mainsalarydiscount.update') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false

@@ -191,7 +191,7 @@
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">اضافة إضافي للموظفين</h4>
+                <h4 class="modal-title">اضافة مكافئة للموظفين</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
@@ -270,7 +270,7 @@
     <div class="modal-dialog modal-2xl">
         <div class="modal-content">
             <div class="modal-header bg-secondary">
-                <h4 class="modal-title">تعديل إضافي الموظف</h4>
+                <h4 class="modal-title">تعديل مكافئة للموظف</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
             </div>
@@ -392,7 +392,7 @@
                     if (resFlag) {
                         $('#loadingModal').modal('show');
                         jQuery.ajax({
-                            url: "{{ route('mainsalaryreward.rewardStore') }}"
+                            url: "{{ route('mainsalaryreward.store') }}"
                             , type: 'post'
                             , 'dataType': 'json'
                             , cache: false
@@ -474,7 +474,7 @@
                     $('#loadingModal').modal('show');
 
                     jQuery.ajax({
-                        url: "{{ route('mainsalaryreward.rewardDelete') }}"
+                        url: "{{ route('mainsalaryreward.delete') }}"
                         , type: 'post'
                         , 'dataType': 'json'
                         , cache: false
@@ -487,14 +487,14 @@
                         , success: function(data) {
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
-                            }, 1000);
+                            }, 500);
                             ajax_search();
                         }
                         , error: function(err) {
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
                             }, 1000);
-                            alert("عفواً حدث خطأ ما : Ajax_rewardDelete");
+                            alert("عفواً حدث خطأ ما : Ajax_delete");
                         }
                     });
                 }
@@ -542,7 +542,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryreward.rewardEdit') }}"
+                url: "{{ route('mainsalaryreward.edit') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false
@@ -553,7 +553,9 @@
                     , finance_month_period_id: finance_month_period_id
                 }
                 , success: function(data) {
-                    $('#loadingModal').modal('hide');
+                    setTimeout(function() {
+                        $('#loadingModal').modal('hide');
+                    }, 500);
                     $("#edit_rewardModalBody").html(data);
                     $("#edit_rewardModal").modal('show');
                     //$('.select2').select2();
@@ -562,7 +564,7 @@
                     });
                 }
                 , error: function(err) {
-                    alert("عفواً حدث خطأ ما : Ajax_rewardEdit");
+                    alert("عفواً حدث خطأ ما : Ajax_edit");
                 }
             });
         });
@@ -624,7 +626,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryreward.rewardUpdate') }}"
+                url: "{{ route('mainsalaryreward.update') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false

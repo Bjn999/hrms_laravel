@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('main_salary_employee_additions', function (Blueprint $table) {
+        Schema::create('main_salary_employee_allowances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('main_salary_employee_id')->references('id')->on('main_salary_employees')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('finance_months_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('finance_month_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger('employee_code');
             $table->decimal('day_price', 10, 2)->comment('الراتب اليومي للموظف');
-            $table->decimal('value', 10, 2)->comment('كم يوم إضافي');
-            $table->decimal('total', 10, 2)->comment('اجمالي الاضافي');
+            $table->foreignId('allowances_id')->comment('نوع البدل')->references('id')->on('allowances')->onUpdate('cascade');
+            $table->decimal('total', 10, 2)->comment('اجمالي البدل');
             $table->integer('is_archived')->default(0)->comment('هل تم الارشفة');
             $table->foreignId('archived_by')->nullable()->comment('من الذي ارشفه')->references('id')->on('admins')->onUpdate('cascade');
             $table->dateTime('archived_at')->nullable()->comment('تاريخ الارشفة');
-            $table->integer('is_auto')->default(0)->comment('هل الاضافي يتم تلقائي من النظام ام بشكل يدوي');
+            $table->integer('is_auto')->default(0)->comment('هل البدل يتم تلقائي من النظام ام بشكل يدوي');
             $table->string('notes', 100)->nullable();
             $table->integer('com_code');
             $table->integer('active')->default(1);
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('main_salary_employee_additions');
+        Schema::dropIfExists('main_salary_employee_allowances');
     }
 };

@@ -11,21 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('main_salary_employee_additions', function (Blueprint $table) {
+        Schema::create('main_salary_p_loans_installments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('main_salary_employee_id')->references('id')->on('main_salary_employees')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('finance_months_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
-            $table->bigInteger('employee_code');
-            $table->decimal('day_price', 10, 2)->comment('الراتب اليومي للموظف');
-            $table->decimal('value', 10, 2)->comment('كم يوم إضافي');
-            $table->decimal('total', 10, 2)->comment('اجمالي الاضافي');
+            $table->foreignId('main_salary_p_loans_id')->comment('السلفة الدائمة التابع له هذا القسط')->references('id')->on('main_salary_employee_permanent_loans')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('main_salary_employee_id')->nullable()->comment('سجل راتب الموظف التابع له هذا القسط')->references('id')->on('main_salary_employees')->onUpdate('cascade');
+            $table->decimal('monthly_installment_value', 10, 2)->comment('قيمة القسط الشهري');
+            $table->string('year_and_month', 10)->comment('تاريخ الاستحقاق');
+            $table->integer('state')->default(0)->comment('حالة الدفع: 0 لم يتم يدفع ، 1 تم الدفع على الراتب - 2 تم الدفع كاش');
+            
             $table->integer('is_archived')->default(0)->comment('هل تم الارشفة');
             $table->foreignId('archived_by')->nullable()->comment('من الذي ارشفه')->references('id')->on('admins')->onUpdate('cascade');
             $table->dateTime('archived_at')->nullable()->comment('تاريخ الارشفة');
-            $table->integer('is_auto')->default(0)->comment('هل الاضافي يتم تلقائي من النظام ام بشكل يدوي');
             $table->string('notes', 100)->nullable();
             $table->integer('com_code');
-            $table->integer('active')->default(1);
             $table->foreignId('added_by')->references('id')->on('admins')->onUpdate('cascade');
             $table->foreignId('updated_by')->nullable()->references('id')->on('admins')->onUpdate('cascade');
 
@@ -38,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('main_salary_employee_additions');
+        Schema::dropIfExists('main_salary_p_loans_installments');
     }
 };

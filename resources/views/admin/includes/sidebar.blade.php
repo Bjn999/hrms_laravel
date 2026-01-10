@@ -148,8 +148,8 @@
             
           </ul>
         </li>
-        <li class="nav-item has-treeview {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') ) ? 'menu-open' : '' }}">
-          <a href="#" class="nav-link {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') ) ? 'active' : '' }}">
+        <li class="nav-item has-treeview {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') || request()->is('admin/mainsalaryallowance*') || request()->is('admin/mainsalaryloan*') || request()->is('admin/mainsalarypermanent_loan*') ) ? 'menu-open' : '' }}">
+          <a href="#" class="nav-link {{ ( request()->is('admin/mainsalaryrecord*') || request()->is('admin/mainsalarysanction*') || request()->is('admin/mainsalaryabsence*') || request()->is('admin/mainsalaryaddition*') || request()->is('admin/mainsalarydiscount*') || request()->is('admin/mainsalaryreward*') || request()->is('admin/mainsalaryallowance*') || request()->is('admin/mainsalaryloan*') || request()->is('admin/mainsalarypermanent_loan*') ) ? 'active' : '' }}">
             {{-- <i class="nav-icon fas fa-user"></i> --}}
             <i class="nav-icon fas fa-money-bill"></i>
             <p>
@@ -201,29 +201,29 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
-                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+              <a href="{{ route('mainsalaryallowance.index') }}" class="nav-link {{request()->is('admin/mainsalaryallowance*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryallowance*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
                 <p>البدلات المتغيرة</p>
               </a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
                 <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
                 <p>فواتير التليفونات</p>
               </a>
-            </li>
+            </li> -->
             <li class="nav-item">
-              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
-                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+              <a href="{{ route('mainsalaryloan.index') }}" class="nav-link {{request()->is('admin/mainsalaryloan*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalaryloan*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
                 <p>السلف الشهرية</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('mainsalaryrecord.index') }}" class="nav-link {{request()->is('admin/mainsalaryrecord*') ? 'active' : ''}} ">
-                <i class="{{request()->is('admin/mainsalaryrecord*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
+              <a href="{{ route('mainsalarypermanent_loan.index') }}" class="nav-link {{request()->is('admin/mainsalarypermanent_loan*') ? 'active' : ''}} ">
+                <i class="{{request()->is('admin/mainsalarypermanent_loan*') ? 'fas' : 'far'}} fa-circle nav-icon"></i>
                 {{-- <i class="nav-icon fas fa-cogs"></i> --}}
                 <p>السلف المستدامة</p>
               </a>

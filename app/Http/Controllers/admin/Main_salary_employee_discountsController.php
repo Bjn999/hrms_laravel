@@ -36,7 +36,7 @@ class Main_salary_employee_discountsController extends Controller
             }
         }
 
-        return view("admin.Main_salary_employee_discounts.index", ["data" => $data, 'finance_years' => $finance_years]);
+        return view("admin.main_salary_employee_discounts.index", ["data" => $data, 'finance_years' => $finance_years]);
     }
 
     //
@@ -82,7 +82,7 @@ class Main_salary_employee_discountsController extends Controller
     }
 
     // Add discount for employee in a current finance month -> Ajax
-    public function discountStore(Request $request)
+    public function store(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -115,7 +115,7 @@ class Main_salary_employee_discountsController extends Controller
     }
 
     // Show Edit discount modalForm for employee in a current finance month -> Ajax 
-    public function discountEdit(Request $request)
+    public function edit(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -145,7 +145,7 @@ class Main_salary_employee_discountsController extends Controller
     }
 
     // Add discount for employee in a current finance month -> Ajax
-    public function discountUpdate(Request $request)
+    public function update(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -175,7 +175,7 @@ class Main_salary_employee_discountsController extends Controller
     }
 
     // Delete discount for employee in a current finance month -> Ajax 
-    public function discountDelete(Request $request)
+    public function delete(Request $request)
     {
         try {
             if ($request->ajax()) {

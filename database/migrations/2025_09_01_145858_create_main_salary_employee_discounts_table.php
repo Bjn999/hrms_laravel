@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('main_salary_employee_discounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('main_salary_employee_id')->references('id')->on('main_salary_employees')->onUpdate('cascade');
-            $table->foreignId('finance_months_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade');
+            $table->foreignId('main_salary_employee_id')->references('id')->on('main_salary_employees')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('finance_months_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger('employee_code');
             $table->decimal('day_price', 10, 2)->comment('الراتب اليومي للموظف');
             $table->foreignId('discounts_type')->comment('نوع الخصم')->references('id')->on('discount_sal_types')->onUpdate('cascade');

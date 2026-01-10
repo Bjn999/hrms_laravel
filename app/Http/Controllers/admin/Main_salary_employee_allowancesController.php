@@ -4,16 +4,16 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin_panel_settings;
+use App\Models\Allowance;
 use App\Models\Employee;
 use App\Models\Finance_calenders;
 use App\Models\Finance_months_periods;
 use App\Models\Main_salary_employee;
-use App\Models\Main_salary_employee_sanction;
+use App\Models\Main_salary_employee_allowance;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class Main_salary_employee_sanctionsController extends Controller
+class Main_salary_employee_allowancesController extends Controller
 {
     // 
     public function index()
@@ -36,7 +36,7 @@ class Main_salary_employee_sanctionsController extends Controller
             }
         }
 
-        return view("admin.main_salary_employee_sanctions.index", ["data" => $data, 'finance_years' => $finance_years]);
+        return view("admin.main_salary_employee_allowances.index", ["data" => $data, 'finance_years' => $finance_years]);
     }
 
     //
@@ -45,11 +45,14 @@ class Main_salary_employee_sanctionsController extends Controller
         $com_code = auth()->user()->com_code;
         $finance_month_data = get_cols_where_row(new Finance_months_periods(), array("*"), array("com_code" => $com_code, 'id' => $id));
         if (empty($finance_month_data)) {
-            return redirect()->route('mainsalarysanction.index')->with(['error' => 'عفواً غير قادر على الوصول الى البيانات المطلوبة']);
+            return redirect()->route('mainsalaryallowance.index')->with(['error' => 'عفواً غير قادر على الوصول الى البيانات المطلوبة']);
         }
 
-        // Bring all Sanctions for the specific Finance Month.
-        $sanctions_data = get_cols_where(new Main_salary_employee_sanction(), array("*"), array("com_code" => $com_code, "finance_months_periods_id" => $id), "id", "DESC");
+        // Bring all allowance Types form the allowances table. 
+        $allowances = get_cols_where(new Allowance(), array("id", "name"), array("com_code" => $com_code, "active" => 1));
+
+        // Bring all allowances for the specific Finance Month.
+        $allowances_data = get_cols_where(new Main_salary_employee_allowance(), array("*"), array("com_code" => $com_code, "finance_month_periods_id" => $id), "id", "DESC");
 
         // Bring all Employees they are active and have salary record.
         $employees = Main_salary_employee::where(["com_code" => $com_code, 'finance_month_id' => $id])->distinct()->get("employee_code");
@@ -61,15 +64,15 @@ class Main_salary_employee_sanctionsController extends Controller
 
         $employees_for_search = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
 
-        return view('admin.main_salary_employee_sanctions.show', ['data' => $sanctions_data, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
+        return view('admin.Main_salary_employee_allowances.show', ['data' => $allowances_data, 'allowances' => $allowances, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
     }
 
-    // Check If the employee has sanctions before for this finance month -> Ajax
+    // Check If the employee has allowances before for this finance month -> Ajax
     public function checkExist(Request $request)
     {
         if ($request->ajax()) {
             $com_code = auth()->user()->id;
-            $checkExist = get_count_where(new Main_salary_employee_sanction(), array('com_code' => $com_code, 'employee_code' => $request->employee_code, 'finance_months_periods_id' => $request->finance_month_period_id));
+            $checkExist = get_count_where(new Main_salary_employee_allowance(), array('com_code' => $com_code, 'employee_code' => $request->employee_code, 'finance_month_periods_id' => $request->finance_month_period_id));
             if ($checkExist > 0) {
                 return json_encode("exists");
             } else {
@@ -78,7 +81,7 @@ class Main_salary_employee_sanctionsController extends Controller
         }
     }
 
-    // Add sanction for employee in a current finance month -> Ajax
+    // Add allowance for employee in a current finance month -> Ajax
     public function store(Request $request)
     {
         try {
@@ -89,18 +92,17 @@ class Main_salary_employee_sanctionsController extends Controller
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
                     $dataToInsert['main_salary_employee_id'] = $mainSalaryEmployee_data['id'];
-                    $dataToInsert['finance_months_periods_id'] = $request->finance_month_period_id;
+                    $dataToInsert['finance_month_periods_id'] = $request->finance_month_period_id;
                     $dataToInsert['is_auto'] = 1;
                     $dataToInsert['employee_code'] = $request->employee_code;
                     $dataToInsert['day_price'] = $request->day_price;
-                    $dataToInsert['sanctions_type'] = $request->sanctions_type;
-                    $dataToInsert['value'] = $request->value;
+                    $dataToInsert['allowances_id'] = $request->allowances_id;
                     $dataToInsert['total'] = $request->total;
                     $dataToInsert['notes'] = $request->notes;
                     $dataToInsert['com_code'] = $com_code;
                     $dataToInsert['added_by'] = auth()->user()->id;
 
-                    insert(new Main_salary_employee_sanction(), $dataToInsert);
+                    insert(new Main_salary_employee_allowance(), $dataToInsert);
                     DB::commit();
 
                     return json_encode('success');
@@ -112,7 +114,7 @@ class Main_salary_employee_sanctionsController extends Controller
         }
     }
 
-    // Show Edit sanction modalForm for employee in a current finance month -> Ajax 
+    // Show Edit allowance modalForm for employee in a current finance month -> Ajax 
     public function edit(Request $request)
     {
         try {
@@ -120,17 +122,21 @@ class Main_salary_employee_sanctionsController extends Controller
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
                 $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('id'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'is_archived' => 0));
-                $mainSalarySanction_data = get_cols_where_row(new Main_salary_employee_sanction(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
-                if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalarySanction_data)) {
+                $mainSalaryallowance_data = get_cols_where_row(new Main_salary_employee_allowance(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+
+                // Bring all allowances Types form the allowances table. 
+                $allowances = get_cols_where(new Allowance(), array("id", "name"), array("com_code" => $com_code, "active" => 1));
+                
+                // return(isEmpty($employees));
+                if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryallowance_data)) {
                     //$employees = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
                     $employees = Main_salary_employee::where(["com_code" => $com_code, 'finance_month_id' => $request->finance_month_period_id])->distinct()->get("employee_code");
                     if (!empty($employees)) {
                         foreach ($employees as $info) {
-                            // $info->emp_name = get_field_value(new Employee(), 'emp_name', array("com_code" => $com_code, "employee_code" => $info->employee_code));
                             $info->employeeData = get_cols_where_row(new Employee(), array("emp_name", "emp_sal", "day_price"), array("com_code" => $com_code, "employee_code" => $info->employee_code));
                         }
                     }
-                    return view('admin.main_salary_employee_sanctions.edit_sanction', ['sanction_data' => $mainSalarySanction_data, 'employees' => $employees]);
+                    return view('admin.main_salary_employee_allowances.edit_allowance', ['allowance_data' => $mainSalaryallowance_data, "allowances" => $allowances, 'employees' => $employees]);
                 }
             }
         } catch (\Exception $ex) {
@@ -138,7 +144,7 @@ class Main_salary_employee_sanctionsController extends Controller
         }
     }
 
-    // Add sanction for employee in a current finance month -> Ajax
+    // Add allowance for employee in a current finance month -> Ajax
     public function update(Request $request)
     {
         try {
@@ -146,18 +152,17 @@ class Main_salary_employee_sanctionsController extends Controller
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
                 $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
-                $mainSalarySanction_data = get_cols_where_row(new Main_salary_employee_sanction(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
-                if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalarySanction_data)) {
+                $mainSalaryallowance_data = get_cols_where_row(new Main_salary_employee_allowance(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryallowance_data)) {
                     DB::beginTransaction();
                     $dataToUpdate['employee_code'] = $request->employee_code;
                     $dataToUpdate['day_price'] = $request->day_price;
-                    $dataToUpdate['sanctions_type'] = $request->sanctions_type;
-                    $dataToUpdate['value'] = $request->value;
+                    $dataToUpdate['allowances_id'] = $request->allowances_id;
                     $dataToUpdate['total'] = $request->total;
                     $dataToUpdate['notes'] = $request->notes;
                     $dataToUpdate['updated_by'] = auth()->user()->id;
 
-                    update(new Main_salary_employee_sanction(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    update(new Main_salary_employee_allowance(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
                     DB::commit();
 
                     return json_encode('success');
@@ -169,7 +174,7 @@ class Main_salary_employee_sanctionsController extends Controller
         }
     }
 
-    // Delete sanction for employee in a current finance month -> Ajax 
+    // Delete allowance for employee in a current finance month -> Ajax 
     public function delete(Request $request)
     {
         try {
@@ -177,11 +182,11 @@ class Main_salary_employee_sanctionsController extends Controller
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
                 $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'is_archived' => 0));
-                $mainSalarySanction_data = get_cols_where_row(new Main_salary_employee_sanction(), array('id'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
-                if (!empty($financeMonth_data) and !empty($mainSalarySanction_data) and !empty($mainSalaryEmployee_data)) {
+                $mainSalaryallowance_data = get_cols_where_row(new Main_salary_employee_allowance(), array('id'), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                if (!empty($financeMonth_data) and !empty($mainSalaryallowance_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
 
-                    destroy(new Main_salary_employee_sanction(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+                    destroy(new Main_salary_employee_allowance(), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
 
                     DB::commit();
 
@@ -194,13 +199,13 @@ class Main_salary_employee_sanctionsController extends Controller
         }
     }
 
-    // Search sanctions By EmpCode - SanctionsType - IsArchived. In the specific FinanceMonth!! -> Ajax
+    // Search allowances By EmpCode - allowancesType - IsArchived. In the specific FinanceMonth!! -> Ajax
     public function showAjaxSearch(Request $request)
     {
         if ($request->ajax()) {
             $com_code = auth()->user()->id;
             $employee_code = $request->employee_code;
-            $sanctions_type = $request->sanctions_type;
+            $allowances_id = $request->allowances_id;
             $is_archived = $request->is_archived;
             $finance_month_period_id = $request->finance_month_period_id;
 
@@ -214,14 +219,14 @@ class Main_salary_employee_sanctionsController extends Controller
                 $value1 = $employee_code;
             }
 
-            if ($sanctions_type == "all") {
+            if ($allowances_id == "all") {
                 $field2 = 'id';
                 $operator2 = '>';
                 $value2 = 0;
             } else {
-                $field2 = 'sanctions_type';
+                $field2 = 'allowances_id';
                 $operator2 = '=';
-                $value2 = $sanctions_type;
+                $value2 = $allowances_id;
             }
 
             if ($is_archived == "all") {
@@ -234,20 +239,20 @@ class Main_salary_employee_sanctionsController extends Controller
                 $value3 = $is_archived;
             }
 
-            $data = Main_salary_employee_sanction::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
-                ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_months_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
+            $data = Main_salary_employee_allowance::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
+                ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_month_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
 
-            return view('admin.main_salary_employee_sanctions.show_ajax_search', ['data' => $data]);
+            return view('admin.Main_salary_employee_allowances.show_ajax_search', ['data' => $data]);
         }
     }
 
-    // Print the sanctions search result 
+    // Print the allowances search result 
     public function printSearch(Request $request)
     {
         $com_code = auth()->user()->id;
-        $employee_code = $request->employee_code_search_sanction;
-        $sanctions_type = $request->sanctions_type_search_sanction;
-        $is_archived = $request->is_archived_search_sanction;
+        $employee_code = $request->employee_code_search_allowance;
+        $allowances_id = $request->allowances_id_search_allowance;
+        $is_archived = $request->is_archived_search_allowance;
         $finance_month_period_id = $request->finance_month_period_id;
 
         $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('*'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
@@ -262,14 +267,14 @@ class Main_salary_employee_sanctionsController extends Controller
             $value1 = $employee_code;
         }
 
-        if ($sanctions_type == "all") {
+        if ($allowances_id == "all") {
             $field2 = 'id';
             $operator2 = '>';
             $value2 = 0;
         } else {
-            $field2 = 'sanctions_type';
+            $field2 = 'allowances_id';
             $operator2 = '=';
-            $value2 = $sanctions_type;
+            $value2 = $allowances_id;
         }
 
         if ($is_archived == "all") {
@@ -282,20 +287,18 @@ class Main_salary_employee_sanctionsController extends Controller
             $value3 = $is_archived;
         }
 
-        $other['value_sum'] = 0;
         $other['total_sum'] = 0;
-        $data = Main_salary_employee_sanction::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
-            ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_months_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
+        $data = Main_salary_employee_allowance::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
+            ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_month_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
         $systemData = get_cols_where_row(new Admin_panel_settings(), array('company_name', 'image', 'phones', 'address'), array('com_code' => $com_code));
 
         if (!empty($data)) {
             foreach ($data as $info) {
-                $other['value_sum'] += $info->value;
                 $other['total_sum'] += $info->total;
             }
         }
 
-        return view('admin.main_salary_employee_sanctions.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
+        return view('admin.Main_salary_employee_allowances.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
     }
 
     // Search Monthes By Finance year !! -> Ajax 
@@ -322,7 +325,7 @@ class Main_salary_employee_sanctionsController extends Controller
                 }
             }
 
-            return view('admin.main_salary_employee_sanctions.ajax_search', ['data' => $data]);
+            return view('admin.Main_salary_employee_allowances.ajax_search', ['data' => $data]);
         }
     }
 }

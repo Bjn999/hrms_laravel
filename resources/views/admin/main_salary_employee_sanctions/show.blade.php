@@ -430,7 +430,7 @@
                     if (resFlag) {
                         $('#loadingModal').modal('show');
                         jQuery.ajax({
-                            url: "{{ route('mainsalarysanction.sanctionStore') }}"
+                            url: "{{ route('mainsalarysanction.store') }}"
                             , type: 'post'
                             , 'dataType': 'json'
                             , cache: false
@@ -469,6 +469,7 @@
                                     setTimeout(function() {
                                         $('#loadingModal').modal('hide');
                                     }, 1000);
+                                    
                                     // Update Sanctions List 
                                     ajax_search();
                                 } else {
@@ -505,7 +506,7 @@
             $('#loadingModal').modal('show');
 
             jQuery.ajax({
-                url: "{{ route('mainsalarysanction.sanctionDelete') }}"
+                url: "{{ route('mainsalarysanction.delete') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false
@@ -525,7 +526,7 @@
                     setTimeout(function() {
                         $('#loadingModal').modal('hide');
                     }, 1000);
-                    alert("عفواً حدث خطأ ما : Ajax_sanctionDelete");
+                    alert("عفواً حدث خطأ ما : Ajax_delete");
                 }
             });
         });
@@ -571,7 +572,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalarysanction.sanctionEdit') }}"
+                url: "{{ route('mainsalarysanction.edit') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false
@@ -582,7 +583,9 @@
                     , finance_month_period_id: finance_month_period_id
                 }
                 , success: function(data) {
-                    $('#loadingModal').modal('hide');
+                    setTimeout(function() {
+                        $('#loadingModal').modal('hide');
+                    }, 500);
                     $("#edit_sanctionModalBody").html(data);
                     $("#edit_sanctionModal").modal('show');
                     //$('.select2').select2();
@@ -591,7 +594,7 @@
                     });
                 }
                 , error: function(err) {
-                    alert("عفواً حدث خطأ ما : Ajax_sanctionEdit");
+                    alert("عفواً حدث خطأ ما : Ajax_edit");
                 }
             });
         });
@@ -654,7 +657,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalarysanction.sanctionUpdate') }}"
+                url: "{{ route('mainsalarysanction.update') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false

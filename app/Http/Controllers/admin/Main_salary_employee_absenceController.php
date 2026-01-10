@@ -78,7 +78,7 @@ class Main_salary_employee_absenceController extends Controller
     }
 
     // Add absence for employee in a current finance month -> Ajax
-    public function absenceStore(Request $request)
+    public function store(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -111,7 +111,7 @@ class Main_salary_employee_absenceController extends Controller
     }
 
     // Show Edit absence modalForm for employee in a current finance month -> Ajax 
-    public function absenceEdit(Request $request)
+    public function edit(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -137,7 +137,7 @@ class Main_salary_employee_absenceController extends Controller
     }
 
     // Add absence for employee in a current finance month -> Ajax
-    public function absenceUpdate(Request $request)
+    public function update(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -167,7 +167,7 @@ class Main_salary_employee_absenceController extends Controller
     }
 
     // Delete absence for employee in a current finance month -> Ajax 
-    public function absenceDelete(Request $request)
+    public function delete(Request $request)
     {
         try {
             if ($request->ajax()) {

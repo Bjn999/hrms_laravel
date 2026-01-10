@@ -36,7 +36,7 @@ class Main_salary_employee_additionController extends Controller
             }
         }
 
-        return view("admin.Main_salary_employee_additions.index", ["data" => $data, 'finance_years' => $finance_years]);
+        return view("admin.main_salary_employee_additions.index", ["data" => $data, 'finance_years' => $finance_years]);
     }
 
     //
@@ -51,9 +51,6 @@ class Main_salary_employee_additionController extends Controller
         // Bring all additions for the specific Finance Month.
         $additions_data = get_cols_where(new Main_salary_employee_addition(), array("*"), array("com_code" => $com_code, "finance_months_periods_id" => $id), "id", "DESC");
 
-        // Bring all additional Types form the additional_sal_types table. 
-        $additional_types = get_cols_where(new Additional_sal_type(), array("id", "name"), array("com_code" => $com_code, "active" => 1));
-
         // Bring all Employees they are active and have salary record.
         $employees = Main_salary_employee::where(["com_code" => $com_code, 'finance_month_id' => $id])->distinct()->get("employee_code");
         if (!empty($employees)) {
@@ -64,7 +61,7 @@ class Main_salary_employee_additionController extends Controller
 
         $employees_for_search = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
 
-        return view('admin.Main_salary_employee_additions.show', ['data' => $additions_data, 'additional_types' => $additional_types, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
+        return view('admin.Main_salary_employee_additions.show', ['data' => $additions_data, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
     }
 
     // Check If the employee has additions before for this finance month -> Ajax
@@ -82,7 +79,7 @@ class Main_salary_employee_additionController extends Controller
     }
 
     // Add addition for employee in a current finance month -> Ajax
-    public function additionStore(Request $request)
+    public function store(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -115,7 +112,7 @@ class Main_salary_employee_additionController extends Controller
     }
 
     // Show Edit addition modalForm for employee in a current finance month -> Ajax 
-    public function additionEdit(Request $request)
+    public function edit(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -123,9 +120,6 @@ class Main_salary_employee_additionController extends Controller
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
                 $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('id'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'is_archived' => 0));
                 $mainSalaryaddition_data = get_cols_where_row(new Main_salary_employee_addition(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
-
-                // Bring all additional Types form the additional_sal_types table. 
-                $additional_types = get_cols_where(new Additional_sal_type(), array("id", "name"), array("com_code" => $com_code, "active" => 1));
 
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryaddition_data)) {
                     //$employees = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
@@ -136,7 +130,7 @@ class Main_salary_employee_additionController extends Controller
                             $info->employeeData = get_cols_where_row(new Employee(), array("emp_name", "emp_sal", "day_price"), array("com_code" => $com_code, "employee_code" => $info->employee_code));
                         }
                     }
-                    return view('admin.Main_salary_employee_additions.edit_addition', ['addition_data' => $mainSalaryaddition_data, "additional_types" => $additional_types, 'employees' => $employees]);
+                    return view('admin.Main_salary_employee_additions.edit_addition', ['addition_data' => $mainSalaryaddition_data, 'employees' => $employees]);
                 }
             }
         } catch (\Exception $ex) {
@@ -145,7 +139,7 @@ class Main_salary_employee_additionController extends Controller
     }
 
     // Add addition for employee in a current finance month -> Ajax
-    public function additionUpdate(Request $request)
+    public function update(Request $request)
     {
         try {
             if ($request->ajax()) {
@@ -175,7 +169,7 @@ class Main_salary_employee_additionController extends Controller
     }
 
     // Delete addition for employee in a current finance month -> Ajax 
-    public function additionDelete(Request $request)
+    public function delete(Request $request)
     {
         try {
             if ($request->ajax()) {

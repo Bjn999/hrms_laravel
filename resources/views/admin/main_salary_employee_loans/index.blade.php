@@ -9,7 +9,7 @@
 @endsection
 
 @section('contentheaderactivelink')
-<a href="{{ route('mainsalarydiscount.index') }}">الخصومات المالية</a>
+<a href="{{ route('mainsalaryloan.index') }}">السلف الشهرية</a>
 @endsection
 
 @section('contentheaderactive')
@@ -22,7 +22,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title card_title_center">
-                بيانات خصومات الرواتب
+                بيانات السلف الشهرية للرواتب
             </h3>
         </div>
 
@@ -70,7 +70,7 @@
                             @endif
 
                             @if ($info->is_open != 0)
-                            <a href="{{ route('mainsalarydiscount.show', $info->id) }}" class="btn btn-success btn-sm">عرض</a>
+                            <a href="{{ route('mainsalaryloan.show', $info->id) }}" class="btn btn-success btn-sm">عرض</a>
                             @endif
 
                         </td>
@@ -104,7 +104,7 @@
             var finance_yr = $('#finance_yr').val();
 
             jQuery.ajax({
-                url: "{{ route('mainsalarydiscount.ajaxSearch') }}"
+                url: "{{ route('mainsalaryloan.ajaxSearch') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false

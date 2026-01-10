@@ -8,9 +8,9 @@
 
         <title> @yield('title') </title>
         <!-- Font Awesome Icons -->
-        {{-- <link rel="stylesheet" href="{{url('assets/admin/plugins/fontawesome-free/css/all.min.css')}}"> --}}
+        <link rel="stylesheet" href="{{url('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
         <!-- Fontawesome -->
-        <script src="https://kit.fontawesome.com/1bc0535d43.js" crossorigin="anonymous"></script>
+        {{-- <script src="https://kit.fontawesome.com/1bc0535d43.js" crossorigin="anonymous"></script> --}}
 
         <!-- Theme style -->
         <link rel="stylesheet" href="{{url('assets/admin/dist/css/adminlte.min.css')}}">
@@ -20,9 +20,9 @@
         <link rel="stylesheet" href="{{url('assets/admin/css/mycustomstyle.css')}}">
         
         <!-- SweetAlert 2 -->
-        <link rel="stylesheet" href="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.css')}}">
-        <!-- Toastr -->
-        <link rel="stylesheet" href="{{url('assets\admin\plugins\toastr\toastr.css')}}">
+        {{-- <link rel="stylesheet" href="{{url('assets/admin/plugins/sweetalert2/sweetalert2.min.css')}}"> --}}
+        {{-- <!-- Toastr -->
+        <link rel="stylesheet" href="{{url('assets\admin\plugins\toastr\toastr.css')}}"> --}}
 
         @yield('css')
 

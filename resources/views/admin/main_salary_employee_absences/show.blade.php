@@ -55,7 +55,7 @@
                             <option selected value="all">غير محدد</option>
                             @if (isset($employees_for_search) and !empty($employees_for_search))
                             @foreach ($employees_for_search as $info)
-                            <option value="{{ $info->employee_code }}" data-salary="{{ $info->emp_sal }}">({{ $info->employee_code }}) {{ $info->emp_name }}</option>
+                            <option value="{{ $info->employee_code }}">({{ $info->employee_code }}) {{ $info->emp_name }}</option>
                             @endforeach
                             @endif
                         </select>
@@ -385,7 +385,7 @@
                         $('#loadingModal').modal('show');
                         // Add an new absences for the choosed employee 
                         jQuery.ajax({
-                            url: "{{ route('mainsalaryabsence.absenceStore') }}"
+                            url: "{{ route('mainsalaryabsence.store') }}"
                             , type: 'post'
                             , 'dataType': 'json'
                             , cache: false
@@ -471,7 +471,7 @@
                     $('#loadingModal').modal('show');
 
                     jQuery.ajax({
-                        url: "{{ route('mainsalaryabsence.absenceDelete') }}"
+                        url: "{{ route('mainsalaryabsence.delete') }}"
                         , type: 'post'
                         , 'dataType': 'json'
                         , cache: false
@@ -485,13 +485,13 @@
                             ajax_search();
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
-                            }, 1000);
+                            }, 500);
                         }
                         , error: function(err) {
                             setTimeout(function() {
                                 $('#loadingModal').modal('hide');
                             }, 1000);
-                            alert("عفواً حدث خطأ ما : Ajax_absenceDelete");
+                            alert("عفواً حدث خطأ ما : Ajax_delete");
                         }
                     });
                 }
@@ -539,7 +539,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryabsence.absenceEdit') }}"
+                url: "{{ route('mainsalaryabsence.edit') }}"
                 , type: 'post'
                 , 'dataType': 'html'
                 , cache: false
@@ -550,7 +550,9 @@
                     , finance_month_period_id: finance_month_period_id
                 }
                 , success: function(data) {
-                    $('#loadingModal').modal('hide');
+                    setTimeout(function() {
+                        $('#loadingModal').modal('hide');
+                    }, 500);
                     $("#edit_absenceModalBody").html(data);
                     $("#edit_absenceModal").modal('show');
                     //$('.select2').select2();
@@ -559,7 +561,7 @@
                     });
                 }
                 , error: function(err) {
-                    alert("عفواً حدث خطأ ما : Ajax_absenceEdit");
+                    alert("عفواً حدث خطأ ما : Ajax_edit");
                 }
             });
         });
@@ -607,7 +609,7 @@
 
             $('#loadingModal').modal('show');
             jQuery.ajax({
-                url: "{{ route('mainsalaryabsence.absenceUpdate') }}"
+                url: "{{ route('mainsalaryabsence.update') }}"
                 , type: 'post'
                 , 'dataType': 'json'
                 , cache: false
