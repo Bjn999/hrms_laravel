@@ -137,7 +137,7 @@
                 <td style="vertical-align: middle">
                     {{ $info->added->name }}
                 </td>
-                <td class="@if ($info->is_approved == 1) bg-success @else bg-info @endif" style="vertical-align: middle">
+                <td class="@if ($info->is_archived == 1) bg-success @else bg-info @endif" style="vertical-align: middle">
                     @if ($info->is_archived == 1)
                     مؤرشف
                     @else

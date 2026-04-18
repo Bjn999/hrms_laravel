@@ -12,9 +12,11 @@ use App\Models\Main_salary_employee;
 use App\Models\Main_salary_employee_discount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\generalTrait;
 
 class Main_salary_employee_discountsController extends Controller
 {
+    use generalTrait;
     // 
     public function index()
     {
@@ -64,7 +66,7 @@ class Main_salary_employee_discountsController extends Controller
 
         $employees_for_search = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
 
-        return view('admin.Main_salary_employee_discounts.show', ['data' => $discounts_data, 'discountal_types' => $discountal_types, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
+        return view('admin.main_salary_employee_discounts.show', ['data' => $discounts_data, 'discountal_types' => $discountal_types, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
     }
 
     // Check If the employee has discounts before for this finance month -> Ajax
@@ -96,13 +98,18 @@ class Main_salary_employee_discountsController extends Controller
                     $dataToInsert['is_auto'] = 1;
                     $dataToInsert['employee_code'] = $request->employee_code;
                     $dataToInsert['day_price'] = $request->day_price;
-                    $dataToInsert['discounts_type'] = $request->discounts_type;
+                    $dataToInsert['discounts_type_id'] = $request->discounts_type;
                     $dataToInsert['total'] = $request->total;
                     $dataToInsert['notes'] = $request->notes;
                     $dataToInsert['com_code'] = $com_code;
                     $dataToInsert['added_by'] = auth()->user()->id;
 
-                    insert(new Main_salary_employee_discount(), $dataToInsert);
+                    $flag = insert(new Main_salary_employee_discount(), $dataToInsert);
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -136,7 +143,7 @@ class Main_salary_employee_discountsController extends Controller
                             $info->employeeData = get_cols_where_row(new Employee(), array("emp_name", "emp_sal", "day_price"), array("com_code" => $com_code, "employee_code" => $info->employee_code));
                         }
                     }
-                    return view('admin.Main_salary_employee_discounts.edit_discount', ['discount_data' => $mainSalarydiscount_data, "discountal_types" => $discountal_types, 'employees' => $employees]);
+                    return view('admin.main_salary_employee_discounts.edit_discount', ['discount_data' => $mainSalarydiscount_data, "discountal_types" => $discountal_types, 'employees' => $employees]);
                 }
             }
         } catch (\Exception $ex) {
@@ -151,18 +158,23 @@ class Main_salary_employee_discountsController extends Controller
             if ($request->ajax()) {
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
-                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
+                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
                 $mainSalarydiscount_data = get_cols_where_row(new Main_salary_employee_discount(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalarydiscount_data)) {
                     DB::beginTransaction();
                     $dataToUpdate['employee_code'] = $request->employee_code;
                     $dataToUpdate['day_price'] = $request->day_price;
-                    $dataToUpdate['discounts_type'] = $request->discounts_type;
+                    $dataToUpdate['discounts_type_id'] = $request->discounts_type;
                     $dataToUpdate['total'] = $request->total;
                     $dataToUpdate['notes'] = $request->notes;
                     $dataToUpdate['updated_by'] = auth()->user()->id;
 
-                    update(new Main_salary_employee_discount(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    $flag = update(new Main_salary_employee_discount(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -186,7 +198,11 @@ class Main_salary_employee_discountsController extends Controller
                 if (!empty($financeMonth_data) and !empty($mainSalarydiscount_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
 
-                    destroy(new Main_salary_employee_discount(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+                    $flag = destroy(new Main_salary_employee_discount(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
 
                     DB::commit();
 
@@ -224,7 +240,7 @@ class Main_salary_employee_discountsController extends Controller
                 $operator2 = '>';
                 $value2 = 0;
             } else {
-                $field2 = 'discounts_type';
+                $field2 = 'discounts_type_id';
                 $operator2 = '=';
                 $value2 = $discounts_type;
             }
@@ -242,7 +258,7 @@ class Main_salary_employee_discountsController extends Controller
             $data = Main_salary_employee_discount::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
                 ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_months_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
 
-            return view('admin.Main_salary_employee_discounts.show_ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_discounts.show_ajax_search', ['data' => $data]);
         }
     }
 
@@ -272,7 +288,7 @@ class Main_salary_employee_discountsController extends Controller
             $operator2 = '>';
             $value2 = 0;
         } else {
-            $field2 = 'discounts_type';
+            $field2 = 'discounts_type_id';
             $operator2 = '=';
             $value2 = $discounts_type;
         }
@@ -300,7 +316,7 @@ class Main_salary_employee_discountsController extends Controller
             }
         }
 
-        return view('admin.Main_salary_employee_discounts.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
+        return view('admin.main_salary_employee_discounts.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
     }
 
     // Search Monthes By Finance year !! -> Ajax 
@@ -327,7 +343,7 @@ class Main_salary_employee_discountsController extends Controller
                 }
             }
 
-            return view('admin.Main_salary_employee_discounts.ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_discounts.ajax_search', ['data' => $data]);
         }
     }
 }

@@ -12,11 +12,13 @@ use App\Models\Main_salary_employee;
 use App\Models\Main_salary_employee_reward;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\generalTrait;
 
 use function PHPUnit\Framework\isEmpty;
 
 class Main_salary_employee_rewardsController extends Controller
 {
+    use generalTrait;
     // 
     public function index()
     {
@@ -98,13 +100,18 @@ class Main_salary_employee_rewardsController extends Controller
                     $dataToInsert['is_auto'] = 1;
                     $dataToInsert['employee_code'] = $request->employee_code;
                     $dataToInsert['day_price'] = $request->day_price;
-                    $dataToInsert['additions_type'] = $request->additions_type;
+                    $dataToInsert['additions_type_id'] = $request->additions_type;
                     $dataToInsert['total'] = $request->total;
                     $dataToInsert['notes'] = $request->notes;
                     $dataToInsert['com_code'] = $com_code;
                     $dataToInsert['added_by'] = auth()->user()->id;
 
-                    insert(new Main_salary_employee_reward(), $dataToInsert);
+                    $flag = insert(new Main_salary_employee_reward(), $dataToInsert);
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -153,18 +160,23 @@ class Main_salary_employee_rewardsController extends Controller
             if ($request->ajax()) {
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
-                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
+                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
                 $mainSalaryaddition_data = get_cols_where_row(new Main_salary_employee_reward(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryaddition_data)) {
                     DB::beginTransaction();
                     $dataToUpdate['employee_code'] = $request->employee_code;
                     $dataToUpdate['day_price'] = $request->day_price;
-                    $dataToUpdate['additions_type'] = $request->additions_type;
+                    $dataToUpdate['additions_type_id'] = $request->additions_type;
                     $dataToUpdate['total'] = $request->total;
                     $dataToUpdate['notes'] = $request->notes;
                     $dataToUpdate['updated_by'] = auth()->user()->id;
 
-                    update(new Main_salary_employee_reward(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    $flag = update(new Main_salary_employee_reward(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -188,7 +200,11 @@ class Main_salary_employee_rewardsController extends Controller
                 if (!empty($financeMonth_data) and !empty($mainSalaryaddition_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
 
-                    destroy(new Main_salary_employee_reward(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+                    $flag = destroy(new Main_salary_employee_reward(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
 
                     DB::commit();
 
@@ -226,7 +242,7 @@ class Main_salary_employee_rewardsController extends Controller
                 $operator2 = '>';
                 $value2 = 0;
             } else {
-                $field2 = 'additions_type';
+                $field2 = 'additions_type_id';
                 $operator2 = '=';
                 $value2 = $additions_type;
             }
@@ -274,7 +290,7 @@ class Main_salary_employee_rewardsController extends Controller
             $operator2 = '>';
             $value2 = 0;
         } else {
-            $field2 = 'additions_type';
+            $field2 = 'additions_type_id';
             $operator2 = '=';
             $value2 = $additions_type;
         }

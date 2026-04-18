@@ -11,9 +11,11 @@ use App\Models\Main_salary_employee;
 use App\Models\Main_salary_employee_absence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\generalTrait;
 
 class Main_salary_employee_absenceController extends Controller
 {
+    use generalTrait;
     // 
     public function index()
     {
@@ -98,7 +100,12 @@ class Main_salary_employee_absenceController extends Controller
                     $dataToInsert['com_code'] = $com_code;
                     $dataToInsert['added_by'] = auth()->user()->id;
 
-                    insert(new Main_salary_employee_absence(), $dataToInsert);
+                    $flag = insert(new Main_salary_employee_absence(), $dataToInsert);
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+                    
                     DB::commit();
 
                     return json_encode('success');
@@ -143,7 +150,7 @@ class Main_salary_employee_absenceController extends Controller
             if ($request->ajax()) {
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
-                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
+                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
                 $mainSalaryabsence_data = get_cols_where_row(new Main_salary_employee_absence(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryabsence_data)) {
                     DB::beginTransaction();
@@ -154,7 +161,12 @@ class Main_salary_employee_absenceController extends Controller
                     $dataToUpdate['notes'] = $request->notes;
                     $dataToUpdate['updated_by'] = auth()->user()->id;
 
-                    update(new Main_salary_employee_absence(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    $flag = update(new Main_salary_employee_absence(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -178,7 +190,11 @@ class Main_salary_employee_absenceController extends Controller
                 if (!empty($financeMonth_data) and !empty($mainSalaryabsence_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
 
-                    destroy(new Main_salary_employee_absence(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+                    $flag = destroy(new Main_salary_employee_absence(), array('com_code' => $com_code, 'id' => $request->id, 'finance_months_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    } 
 
                     DB::commit();
 

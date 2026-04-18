@@ -12,9 +12,11 @@ use App\Models\Main_salary_employee;
 use App\Models\Main_salary_employee_allowance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\generalTrait;
 
 class Main_salary_employee_allowancesController extends Controller
 {
+    use generalTrait;
     // 
     public function index()
     {
@@ -64,7 +66,7 @@ class Main_salary_employee_allowancesController extends Controller
 
         $employees_for_search = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code), "employee_code", "ASC");
 
-        return view('admin.Main_salary_employee_allowances.show', ['data' => $allowances_data, 'allowances' => $allowances, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
+        return view('admin.main_salary_employee_allowances.show', ['data' => $allowances_data, 'allowances' => $allowances, 'financeMonth_data' => $finance_month_data, 'employees' => $employees, 'employees_for_search' => $employees_for_search]);
     }
 
     // Check If the employee has allowances before for this finance month -> Ajax
@@ -102,7 +104,12 @@ class Main_salary_employee_allowancesController extends Controller
                     $dataToInsert['com_code'] = $com_code;
                     $dataToInsert['added_by'] = auth()->user()->id;
 
-                    insert(new Main_salary_employee_allowance(), $dataToInsert);
+                    $flag = insert(new Main_salary_employee_allowance(), $dataToInsert);
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -151,7 +158,7 @@ class Main_salary_employee_allowancesController extends Controller
             if ($request->ajax()) {
                 $com_code = auth()->user()->id;
                 $financeMonth_data = get_cols_where_row(new Finance_months_periods(), array('id'), array('com_code' => $com_code, 'id' => $request->finance_month_period_id, 'is_open' => 1));
-                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
+                $mainSalaryEmployee_data = get_cols_where_row(new Main_salary_employee(), array('*'), array('com_code' => $com_code, 'id' => $request->main_salary_employee_id, 'finance_month_id' => $request->finance_month_period_id, 'employee_code' => $request->employee_code, 'is_archived' => 0));
                 $mainSalaryallowance_data = get_cols_where_row(new Main_salary_employee_allowance(), array('*'), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
                 if (!empty($financeMonth_data) and !empty($mainSalaryEmployee_data) and !empty($mainSalaryallowance_data)) {
                     DB::beginTransaction();
@@ -162,7 +169,12 @@ class Main_salary_employee_allowancesController extends Controller
                     $dataToUpdate['notes'] = $request->notes;
                     $dataToUpdate['updated_by'] = auth()->user()->id;
 
-                    update(new Main_salary_employee_allowance(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    $flag = update(new Main_salary_employee_allowance(), $dataToUpdate, array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'main_salary_employee_id' => $request->main_salary_employee_id, 'is_archived' => 0));
+                    
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
+
                     DB::commit();
 
                     return json_encode('success');
@@ -186,7 +198,11 @@ class Main_salary_employee_allowancesController extends Controller
                 if (!empty($financeMonth_data) and !empty($mainSalaryallowance_data) and !empty($mainSalaryEmployee_data)) {
                     DB::beginTransaction();
 
-                    destroy(new Main_salary_employee_allowance(), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+                    $flag = destroy(new Main_salary_employee_allowance(), array('com_code' => $com_code, 'id' => $request->id, 'finance_month_periods_id' => $request->finance_month_period_id, 'is_archived' => 0));
+
+                    if ($flag) {
+                        $this->recaculate_main_salary_employee($mainSalaryEmployee_data['id']);
+                    }
 
                     DB::commit();
 
@@ -242,7 +258,7 @@ class Main_salary_employee_allowancesController extends Controller
             $data = Main_salary_employee_allowance::select('*')->where($field1, $operator1, $value1)->where($field2, $operator2, $value2)
                 ->where($field3, $operator3, $value3)->where(['com_code' => $com_code, 'finance_month_periods_id' => $finance_month_period_id])->orderby('id', 'DESC')->get();
 
-            return view('admin.Main_salary_employee_allowances.show_ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_allowances.show_ajax_search', ['data' => $data]);
         }
     }
 
@@ -298,7 +314,7 @@ class Main_salary_employee_allowancesController extends Controller
             }
         }
 
-        return view('admin.Main_salary_employee_allowances.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
+        return view('admin.main_salary_employee_allowances.print_search', ['data' => $data, 'financeMonth_data' => $financeMonth_data, 'systemData' => $systemData, 'totals' => $other]);
     }
 
     // Search Monthes By Finance year !! -> Ajax 
@@ -325,7 +341,7 @@ class Main_salary_employee_allowancesController extends Controller
                 }
             }
 
-            return view('admin.Main_salary_employee_allowances.ajax_search', ['data' => $data]);
+            return view('admin.main_salary_employee_allowances.ajax_search', ['data' => $data]);
         }
     }
 }

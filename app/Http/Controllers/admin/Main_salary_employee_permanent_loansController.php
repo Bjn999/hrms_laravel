@@ -21,9 +21,9 @@ class Main_salary_employee_permanent_loansController extends Controller
     {
         $com_code = auth()->user()->com_code;
 
-        $data = get_cols_where_p(new Main_salary_employee_permanent_loan(), array("*"), array("com_code" => $com_code), "id", "DESC", P_C);
+        $data = get_cols_where_p(new Main_salary_employee_permanent_loan(), array("*"), array("com_code" => $com_code), "id", "ASC", P_C);
 
-        $other['employees'] = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code, 'functional_status' => 1));
+        $other['employees'] = get_cols_where(new Employee(), array("employee_code", "emp_name", "emp_sal", "day_price"), array("com_code" => $com_code, 'functional_status' => 1), 'id', "ASC");
 
         return view("admin.main_salary_employee_permanent_loans.index", ["data" => $data, 'other' => $other]);
     }
@@ -72,6 +72,7 @@ class Main_salary_employee_permanent_loansController extends Controller
                         $i = 1;
                         $effectivedate = $flagParent_loan['year_and_month_start'];
                         while ($i <= $flagParent_loan['months_number']) {
+                            $installmentToInsert['employee_code'] = $request->employee_code;
                             $installmentToInsert['main_salary_p_loans_id'] = $flagParent_loan['id'];
                             $installmentToInsert['monthly_installment_value'] = $dataToInsert['monthly_installment_value'];
                             $installmentToInsert['year_and_month'] = $effectivedate;
@@ -162,6 +163,7 @@ class Main_salary_employee_permanent_loansController extends Controller
                             $effectivedate = $dataToUpdate['year_and_month_start'];
                             while ($i <= $dataToUpdate['months_number']) {
                                 $newInstallmentToInsert['main_salary_p_loans_id'] = $request->id;
+                                $newInstallmentToInsert['employee_code'] = $request->employee_code;
                                 $newInstallmentToInsert['monthly_installment_value'] = $dataToUpdate['monthly_installment_value'];
                                 $newInstallmentToInsert['year_and_month'] = $effectivedate;
                                 $newInstallmentToInsert['added_by'] = auth()->user()->id;
@@ -232,8 +234,10 @@ class Main_salary_employee_permanent_loansController extends Controller
 
                     $flagP = destroy(new Main_salary_employee_permanent_loan(), array('com_code' => $com_code, 'id' => $request->id, 'is_archived' => 0, 'is_dismissal' => 0));
                     if ($flagP) {
-                        destroy(new Main_salary_p_loans_installment(), array('com_code' => $com_code, 'main_salary_p_loans_id' => $request->id, 'state' => 0));
+                        destroy(new Main_salary_p_loans_installment(), array('com_code' => $com_code, 'main_salary_p_loans_id' => $request->id, 'status' => 0));
                     }
+
+                    DB::commit();
 
                     return json_encode('success');
                 } else {
@@ -284,6 +288,12 @@ class Main_salary_employee_permanent_loansController extends Controller
 
                 // $flagParent_loan = update(new Main_salary_employee_permanent_loan(), $dataToUpdate, ['com_code' => $com_code, 'id' => $id]);
                 $flagParent_loan = update(new Main_salary_employee_permanent_loan(), $dataToUpdate, ['com_code' => $com_code, 'id' => $request->id]);
+                
+                if ($flagParent_loan) {
+                    $dataToUpdateInstallment['is_parent_dismissal'] = 1;
+
+                    update(new Main_salary_p_loans_installment(), $dataToUpdateInstallment, ['com_code' => $com_code, 'main_salary_p_loans_id' => $request->id]);
+                }
 
                 DB::commit();
 

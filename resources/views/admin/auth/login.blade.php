@@ -19,6 +19,10 @@
   <link rel="stylesheet" href="{{url('assets/admin/fonts/SansPro/SansPro.min.css')}}">
 
   <style>
+    body {
+        background-image: url("{{ asset('assets/admin/imgs/login.jpg') }}");
+        background-size: cover;
+    }
     input.form-control {
         text-align: right;
     }
@@ -33,14 +37,14 @@
       font-size: 14px;
       font-weight: bold;
     }
-    @media (max-width:350px) {
+    @media (max-width: 350px) {
       body {
         background-size: 100%;
       }
     }
   </style>
 </head>
-<body class="hold-transition login-page" style="background-size: cover; background-image: url('{{ url('assets/admin/imgs/login.jpg') }}');">
+<body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
     <span style="font-size: 130%;">BJN</span><b>HR</b>MS

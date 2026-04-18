@@ -54,17 +54,17 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
                         <li class="nav-item col-4 text-center">
-                            <a class="nav-link @if (!Session::has('tab3')) active @endif" id="custom-content-above-home-tab" data-toggle="pill" href="#persional_data" role="tab" aria-controls="custom-content-above-home" aria-selected="true">البيانات الشخصية</a>
+                            <a class="nav-link @if (!Session::has('tab2') and !Session::has('tab3')) active @endif" id="custom-content-above-home-tab" data-toggle="pill" href="#persional_data" role="tab" aria-controls="custom-content-above-home" aria-selected="true">البيانات الشخصية</a>
                         </li>
                         <li class="nav-item col-4 text-center">
-                            <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#job_data" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">البيانات الوظيفية</a>
+                            <a class="nav-link @if (Session::has('tab2') and !Session::has('tab3')) active @endif" id="custom-content-above-profile-tab" data-toggle="pill" href="#job_data" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">البيانات الوظيفية</a>
                         </li>
                         <li class="nav-item col-4 text-center">
-                            <a class="nav-link @if (Session::has('tab3')) active @endif" id="custom-content-above-messages-tab" data-toggle="pill" href="#addional_data" role="tab" aria-controls="custom-content-above-messages" aria-selected="false">البيانات الإضافية</a>
+                            <a class="nav-link @if (!Session::has('tab2') and Session::has('tab3')) active @endif" id="custom-content-above-messages-tab" data-toggle="pill" href="#addional_data" role="tab" aria-controls="custom-content-above-messages" aria-selected="false">البيانات الإضافية</a>
                         </li>
                     </ul>
                     <div class="tab-content" id="custom-content-above-tabContent">
-                        <div class="tab-pane fade @if (!Session::has('tab3')) show active @endif" id="persional_data" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
+                        <div class="tab-pane fade @if (!Session::has('tab2') and !Session::has('tab3')) show active @endif" id="persional_data" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
                             <br>
                             <div class="row">
                                 <div class="col-md-4">
@@ -223,8 +223,8 @@
                                 </div>
                                 <div class="col-md-4 related_to_emp_social_status" @if($data['emp_social_status_id']==1 || $data['emp_social_status_id']=='' ) style="display:none;" @endif>
                                     <div class="form-group">
-                                        <label disabled for="children_number">عدد الأبناء:</label>
-                                        <input type="text" name="children_number" id="children_number" class="form-control" value="{{ $data['children_number'] }}" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        <label for="children_number">عدد الأبناء:</label>
+                                        <input disabled type="text" name="children_number" id="children_number" class="form-control" value="{{ $data['children_number'] }}" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -416,7 +416,7 @@
                             </div>
 
                         </div>
-                        <div class="tab-pane fade" id="job_data" role="tabpanel" aria-labelledby="custom-content-above-profile-tab">
+                        <div class="tab-pane fade @if (Session::has('tab2') and !Session::has('tab3')) show active @endif" id="job_data" role="tabpanel" aria-labelledby="custom-content-above-profile-tab">
                             <br>
                             <div class="row">
                                 <div class="col-md-4">
@@ -624,9 +624,89 @@
                                         <textarea disabled type="text" max-line="3" name="urgent_person_details" id="urgent_person_details" class="form-control">{{ $data['urgent_person_details'] }}</textarea>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="does_has_fixed_allowance">هل له بدلات ثابتة:</label>
+                                        <select disabled name="does_has_fixed_allowance" class="form-control" id="does_has_fixed_allowance">
+                                            <option {{ $data['does_has_fixed_allowance'] == 1 ? 'selected' : '' }} value="1">نعم</option>
+                                            <option {{ $data['does_has_fixed_allowance'] == 0 ? 'selected' : '' }} value="0">لا</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                @if($data['does_has_fixed_allowance'] == 1)
+                                <div class="col-md-12">
+                                    <hr />
+                                    <h5 class="text-center col-12 mb-3" style="font-weight: bold">
+                                        البدلات الثابتة للموظف
+
+                                        <button title="إضافة بدل جديد" class="btn btn-sm btn-success col-1" id="add_new_fixed_allowance" data-toggle="modal" data-target="#add_fixed_allowance_modal"><i class="fa fa-plus"></i></button>
+                                    </h5>
+
+                                    @if (isset($data['fixed_allowances']) and !empty($data['fixed_allowances']) and count($data['fixed_allowances']) > 0)
+                                    <table id="example2" class="table table-bordered table-hover text-center">
+                                        <thead class="custom_thead">
+                                            <tr>
+                                                <th style="vertical-align: middle"> اسم البدل </th>
+                                                <th style="vertical-align: middle"> قيمة البدل </th>
+                                                <th style="vertical-align: middle"> تاريخ الاضافة </th>
+                                                <th style="vertical-align: middle"> تاريخ التحديث </th>
+                                                <th> </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ( $data['fixed_allowances'] as $info )
+                                            @php
+                                            $created_at = new DateTime($info->created_at);
+                                            $updated_at = new DateTime($info->updated_at);
+                                            @endphp
+                                            <tr>
+                                                <td style="vertical-align: middle"> {{ $info->allowance->name }} </td>
+                                                <td style="vertical-align: middle"> {{ $info->value*1 }} رس </td>
+                                                <td style="vertical-align: middle">
+                                                    {{ $created_at->format('Y-d-M') }}
+                                                    <br />
+                                                    {{ $created_at->format('h:i') }} {{ $created_at->format('A') }}
+                                                    <br />
+                                                    بواسطة
+                                                    {{ $info->added->name }}
+                                                </td>
+                                                <td style="vertical-align: middle">
+                                                    @if($info->updated_by > 0)
+                                                    {{ $updated_at->format("Y-m-d") }}
+                                                    <br />
+                                                    {{ $updated_at->format("h:i") }} {{ $updated_at->format("A") }}
+                                                    <br />
+                                                    بواسطة
+                                                    {{ $info->updatedby->name }}
+                                                    @else
+
+                                                    <span class="text-center">
+                                                        لم يتم التحديث
+                                                    </span>
+
+                                                    @endif
+                                                </td>
+
+                                                <td style="vertical-align: middle">
+
+                                                    <a title="حذف هذا البدل" href="{{ route('employees.deleteFixedAllowance', $info->id) }}" class="btn btn-danger r_u_sure"><span class="fa fa-trash"></span></a>
+                                                    <button title="تعديل هذا البدل" data-id="{{ $info->id }}" class="btn btn-success load_edit_fixedAllowance"><i class="fa fa-edit"></i></button>
+                                                    {{-- <a title="تعديل هذا البدل" href="" class="btn btn-primary" onclick="return confirm('هل تريد تحميل هذا الملف؟')"><span class="fa fa-edit"></span></a> --}}
+
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                    @else
+                                    <p class="text-danger text-center font-weight-bold my-5">لا توجد بيانات لعرضها</p>
+                                    @endif
+                                </div>
+                                @endif
                             </div>
                         </div>
-                        <div class="tab-pane fade @if (Session::has('tab3')) show active @endif" id="addional_data" role="tabpanel" aria-labelledby="custom-content-above-messages-tab">
+                        <div class="tab-pane fade @if (!Session::has('tab2') and Session::has('tab3')) show active @endif" id="addional_data" role="tabpanel" aria-labelledby="custom-content-above-messages-tab">
                             <br>
                             <div class="row">
                                 <div class="col-md-4">
@@ -682,15 +762,6 @@
                                     <div class="form-group">
                                         <label for="resignation_cause">سبب ترك العمل:</label>
                                         <input disabled type="text" name="resignation_cause" id="resignation_cause" class="form-control" value="{{ $data['resignation_cause'] }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="does_has_fixed_allowance">هل له بدلات ثابتة:</label>
-                                        <select disabled name="does_has_fixed_allowance" class="form-control" id="does_has_fixed_allowance">
-                                            <option {{ $data['does_has_fixed_allowance'] == 1 ? 'selected' : '' }} value="1">نعم</option>
-                                            <option {{ $data['does_has_fixed_allowance'] == 0 ? 'selected' : '' }} value="0">لا</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -778,6 +849,7 @@
                                     <button id="upload_new_file" data-toggle="modal" data-target="#add_files_modal" class="btn btn-sm btn-success"> إرفاق ملف جديد <i class="fa fa-upload"></i></button>
                                 </div>
 
+
                             </div>
                         </div>
                     </div>
@@ -788,7 +860,7 @@
     </div>
 </div>
 
-<!-- .modal -->
+<!-- .addFileModal -->
 <div class="modal fade" id="add_files_modal">
     <div class="modal-dialog modal-xl">
         <div class="modal-content bg-secondary">
@@ -829,6 +901,89 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
+<!-- /.addFileModal -->
 
+<!-- .addFixedAllowanceModal -->
+<div class="modal fade" id="add_fixed_allowance_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary">
+                <h4 class="modal-title">إضافة بدل ثابت للموضف</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('employees.addFixedAllowance', $data['id']) }}" method="post">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="add_allowance_id">البدل: <span class="text-danger">*</span></label>
+                                <select name="add_allowance_id" id="add_allowance_id" class="form-control select2">
+                                    <option selected value="">غير محدد</option>
+                                    @if (isset($other['allowances']) and !empty($other['allowances']))
+                                    @foreach ($other['allowances'] as $info)
+                                    <option value="{{ $info->id }}">{{ $info->name }}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="add_value">قيمة البدل:</label>
+                                <input type="number" name="add_value" id="add_value" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g,'')">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group text-center">
+                                <button class="btn btn-success" id="add_fixed_allowance" type="submit">حفظ</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between bg-secondary">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.addFixedAllowanceModal -->
+
+<!-- .editFixedAllowanceModal -->
+<div class="modal fade" id="edit_fixed_allowance_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary">
+                <h4 class="modal-title">تعديل البدل الثابت للموضف</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edit_fixed_allowance_modal_body">
+                
+            </div>
+            <div class="modal-footer justify-content-between bg-secondary">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.editFixedAllowanceModal -->
+
+@endsection
+
+@section('script')
+<script src="{{ url('assets/admin/plugins/select2/js/select2.full.min.js') }}"></script>
+<script src="{{ url('assets/admin/js/employee.js') }}"></script>
+
+<script>
+    var edit_fixedAllowanceLink = "{{ route('employees.editFixedAllowance') }}";
+</script>
 @endsection

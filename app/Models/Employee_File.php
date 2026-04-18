@@ -10,7 +10,6 @@ class Employee_File extends Model
     use HasFactory;
     protected $table = "employees_files";
     protected $guarded = [];
-
     
     public function employee(){
         return $this->BelongsTo('\App\Models\Employee', 'employee_id');

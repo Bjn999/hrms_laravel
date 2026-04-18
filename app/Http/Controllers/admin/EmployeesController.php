@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeesRequest;
+use App\Models\Allowance;
 use App\Models\Blood_Group;
 use App\Models\Branche;
 use App\Models\Center;
@@ -12,9 +13,11 @@ use App\Models\Department;
 use App\Models\Driving_license_type;
 use App\Models\Employee;
 use App\Models\Employee_File;
+use App\Models\Employee_fixed_allowance;
 use App\Models\Governorate;
 use App\Models\Jobs_categories;
 use App\Models\Language;
+use App\Models\Main_salary_employee;
 use App\Models\Military_Status;
 use App\Models\Nationality;
 use App\Models\Qualification;
@@ -22,13 +25,17 @@ use App\Models\Religion;
 use App\Models\Resignation;
 use App\Models\shifts_type;
 use App\Models\Social_Status_Type;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use App\Traits\generalTrait;
 
 class EmployeesController extends Controller
 {
+    use generalTrait;
+
     public function index()
     {
         $com_code = auth()->user()->com_code;
@@ -60,13 +67,13 @@ class EmployeesController extends Controller
         $data['driving_license_type'] = get_cols_where(new Driving_license_type(), array('id', 'name'), array('com_code' => $com_code, 'active' => 1));
         $data['shifts_type'] = get_cols_where(new shifts_type(), array('id', 'type', 'from_time', 'to_time', 'total_hour'), array('com_code' => $com_code, 'active' => 1), 'id', 'ASC');
         $data['resignations'] = get_cols_where(new Resignation(), array('id', 'name'), array('com_code' => $com_code, 'active' => 1), 'id', 'ASC');
-
+        $date = new DateTime('');
+        $date->format('');
         return view('admin.employees.create', ['data' => $data]);
     }
 
     public function store(EmployeesRequest $request)
     {
-
         try {
             $com_code = auth()->user()->com_code;
 
@@ -283,7 +290,6 @@ class EmployeesController extends Controller
             }
 
             // تأكد من ان كود بصمة الموظف لا يتكرر ابداً
-            // $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('id', '!=', $id)->first();
             $checkExist_zketo_code = Employee::select('id')->where(['zketo_code' => $request->zketo_code, 'com_code' => $com_code])->where('id', '!=', $id)->where('zketo_code', '!=', '')->first();
             if (!empty($checkExist_zketo_code)) {
                 return redirect()->back()->with(['error' => 'عفواً كود بصمة الموظف مسجل من قبل'])->withInput();
@@ -399,7 +405,19 @@ class EmployeesController extends Controller
                 }
             }
 
-            update(new Employee(), $dataToUpdate, array('com_code' => $com_code, 'id' => $id));
+            $flag = update(new Employee(), $dataToUpdate, array('com_code' => $com_code, 'id' => $id));
+
+            if ($flag) {
+                if ($dataToUpdate['does_has_fixed_allowance'] == 0) {
+                    // يتم حذف البدلات الثابتة إن وجدت وتحديث المرتب الحالي المفتوح
+                    destroy(new Employee_fixed_allowance(), ['com_code' => $com_code, 'employee_id' => $id]);
+                }
+                // لو يوجد راتب مفتوح للموظف نعيد احتسابه
+                $currentSalary = get_cols_where_row(new Main_salary_employee(), ['id'], ['com_code' => $com_code, 'employee_code' => $data['employee_code'], 'is_archived' => 0]);
+                if (!empty($currentSalary)) {
+                    $this->recaculate_main_salary_employee($currentSalary['id']);
+                }
+            }
 
             DB::commit();
 
@@ -594,8 +612,13 @@ class EmployeesController extends Controller
         $other['driving_license_type'] = get_cols_where(new Driving_license_type(), array('id', 'name'), array('com_code' => $com_code, 'id' => $data['driving_license_type_id']));
         $other['shifts_type'] = get_cols_where(new shifts_type(), array('id', 'type', 'from_time', 'to_time', 'total_hour'), array('com_code' => $com_code, 'id' => $data['shift_type_id']), 'id', 'ASC');
         $other['resignations'] = get_cols_where(new Resignation(), array('id', 'name'), array('com_code' => $com_code, 'id' => $data['resignation_id']), 'id', 'ASC');
-        
+
         $other['employee_files'] = get_cols_where(new Employee_File(), array('*'), array('com_code' => $com_code, 'employee_id' => $id));
+
+        if ($data['does_has_fixed_allowance'] == 1) {
+            $data['fixed_allowances'] = get_cols_where(new Employee_fixed_allowance(), array('*'), array('com_code' => $com_code, 'employee_id' => $id));
+            $other['allowances'] = get_cols_where(new Allowance(), array('id', 'name'), array('com_code' => $com_code), 'id', 'ASC');
+        }
 
         return view('admin.employees.show', ['data' => $data, 'other' => $other]);
     }
@@ -617,7 +640,6 @@ class EmployeesController extends Controller
 
     public function add_files($id, Request $request)
     {
- 
         try {
             $com_code = auth()->user()->com_code;
 
@@ -637,7 +659,7 @@ class EmployeesController extends Controller
 
             $dataToInsert['name'] = $request->name;
             $dataToInsert['employee_id'] = $id;
-            
+
             if ($request->has('file_path')) {
                 $request->validate([
                     'file_path' => 'required|mimes:png,jpg,jpeg|max:2000'
@@ -660,7 +682,6 @@ class EmployeesController extends Controller
         }
     }
 
-    
     public function destroy_file($id)
     {
         try {
@@ -689,7 +710,6 @@ class EmployeesController extends Controller
         }
     }
 
-    
     public function download_file($id)
     {
         $com_code = auth()->user()->com_code;
@@ -703,5 +723,149 @@ class EmployeesController extends Controller
         $file_path = "assets/admin/uploads/" . $data['file_path'];
 
         return response()->download($file_path);
+    }
+
+    public function addFixedAllowance(Request $request, $id)
+    {
+        // return redirect()->back()->with(['success' => 'تم إضافة البيانات بنجاح', 'tab2' => '1']);
+        try {
+            $com_code = auth()->user()->com_code;
+
+            // تأكد من امكانية الوصول للبيانات
+            $data = get_cols_where_row(new Employee(), array('id', 'employee_code'), array('com_code' => $com_code, 'id' => $id));
+            if (empty($data)) {
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة', 'tab2' => '1']);
+            }
+
+            // تأكد من ان البدل لا يتكرر ابداً
+            $checkExist = Employee_fixed_allowance::select('id')->where(['com_code' => $com_code, 'allowance_id' => $request->add_allowance_id, 'employee_id' => $id])->first();
+            if (!empty($checkExist)) {
+                return redirect()->back()->with(['error' => 'عفواً هذا البدل مسجل من قبل', 'tab2' => '1']);
+            }
+
+            DB::beginTransaction();
+
+            $dataToInsert['allowance_id'] = $request->add_allowance_id;
+            $dataToInsert['employee_id'] = $id;
+            $dataToInsert['value'] = $request->add_value;
+
+            $dataToInsert['added_by'] = auth()->user()->id;
+            $dataToInsert['com_code'] = $com_code;
+
+            $flag = insert(new Employee_fixed_allowance(), $dataToInsert);
+            
+            if ($flag) {
+                // لو يوجد راتب مفتوح للموظف نعيد احتسابه
+                $currentSalary = get_cols_where_row(new Main_salary_employee(), ['id'], ['com_code' => $com_code, 'employee_code' => $data['employee_code'], 'is_archived' => 0]);
+                if (!empty($currentSalary)) {
+                    $this->recaculate_main_salary_employee($currentSalary['id']);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with(['success' => 'تم إضافة البدل بنجاح', 'tab2' => '1']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
+        }
+    }
+
+    public function editFixedAllowance(Request $request)
+    {
+        if ($request->ajax()) {
+            try {
+                $com_code = auth()->user()->com_code;
+
+                // تأكد من امكانية الوصول للبيانات
+                $data = get_cols_where_row(new Employee_fixed_allowance(), array('*'), array('com_code' => $com_code, 'id' => $request->id));
+                if (!empty($data)) {
+                    // return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
+                    return view("admin.employees.edit_fixedAllowance", ['data' => $data]);
+                }
+
+                return json_encode(['error' => 'غير قادر على الوصول لهذا البدل']);
+                
+            } catch (\Exception $ex) {
+                DB::rollBack();
+                return json_encode(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
+            }
+        }
+    }
+
+    public function updateFixedAllowance(Request $request, $id)
+    {
+        try {
+            $com_code = auth()->user()->com_code;
+
+            // تأكد من امكانية الوصول للبيانات
+            $data = get_cols_where_row(new Employee_fixed_allowance(), array('employee_id'), array('com_code' => $com_code, 'id' => $id));
+            if (empty($data)) {
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة', 'tab2' => '1']);
+            }
+            
+            $employeedata = get_cols_where_row(new Employee(), array('employee_code'), array('com_code' => $com_code, 'id' => $data['employee_id']));
+            if (empty($employeedata)) {
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة', 'tab2' => '1']);
+            }
+
+            DB::beginTransaction();
+
+            $dataToUpdate['value'] = $request->edit_value;
+
+            $dataToUpdate['updated_by'] = auth()->user()->id;
+
+            $flag = update(new Employee_fixed_allowance(), $dataToUpdate, ['com_code' => $com_code, 'id' => $id]);
+
+            if ($flag) {
+                // لو يوجد راتب مفتوح للموظف نعيد احتسابه
+                $currentSalary = get_cols_where_row(new Main_salary_employee(), ['id'], ['com_code' => $com_code, 'employee_code' => $employeedata['employee_code'], 'is_archived' => 0]);
+                if (!empty($currentSalary)) {
+                    $this->recaculate_main_salary_employee($currentSalary['id']);
+                }
+
+                DB::commit();
+                return redirect()->back()->with(['success' => 'تم تحديث البدل بنجاح', 'tab2' => '1']);
+            }
+            
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
+        }
+    }
+
+    public function deleteFixedAllowance($id)
+    {
+        try {
+            $com_code = auth()->user()->com_code;
+
+            // تأكد من امكانية الوصول للبيانات
+            $data = get_cols_where_row(new Employee_fixed_allowance(), array('id', 'employee_id'), array('com_code' => $com_code, 'id' => $id));
+            if (empty($data)) {
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
+            }
+            
+            $employeedata = get_cols_where_row(new Employee(), array('employee_code'), array('com_code' => $com_code, 'id' => $data['employee_id']));
+            if (empty($employeedata)) {
+                return redirect()->back()->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
+            }
+
+            DB::beginTransaction();
+
+            $flag = destroy(new Employee_fixed_allowance(), ['com_code' => $com_code, 'id' => $id]);
+            if ($flag) {
+                // لو يوجد راتب مفتوح للموظف نعيد احتسابه
+                $currentSalary = get_cols_where_row(new Main_salary_employee(), ['id'], ['com_code' => $com_code, 'employee_code' => $employeedata['employee_code'], 'is_archived' => 0]);
+                if (!empty($currentSalary)) {
+                    $this->recaculate_main_salary_employee($currentSalary['id']);
+                }
+
+                DB::commit();
+                return redirect()->back()->with(['success' => 'تم حذف البدل بنجاح', 'tab2' => '1']);
+            }
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
+        }
     }
 }

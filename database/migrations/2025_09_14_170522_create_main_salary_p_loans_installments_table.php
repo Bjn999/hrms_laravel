@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('main_salary_p_loans_installments', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('employee_code');
             $table->foreignId('main_salary_p_loans_id')->comment('السلفة الدائمة التابع له هذا القسط')->references('id')->on('main_salary_employee_permanent_loans')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('main_salary_employee_id')->nullable()->comment('سجل راتب الموظف التابع له هذا القسط')->references('id')->on('main_salary_employees')->onUpdate('cascade');
             $table->decimal('monthly_installment_value', 10, 2)->comment('قيمة القسط الشهري');
             $table->string('year_and_month', 10)->comment('تاريخ الاستحقاق');
-            $table->integer('state')->default(0)->comment('حالة الدفع: 0 لم يتم يدفع ، 1 تم الدفع على الراتب - 2 تم الدفع كاش');
+            $table->integer('status')->default(0)->comment('حالة الدفع: 0 لم يتم يدفع ، 1 تم الدفع على الراتب - 2 تم الدفع كاش');
             
+            $table->integer('is_parent_dismissal')->default(0)->comment('هل تم صرف الاب');
             $table->integer('is_archived')->default(0)->comment('هل تم الارشفة');
             $table->foreignId('archived_by')->nullable()->comment('من الذي ارشفه')->references('id')->on('admins')->onUpdate('cascade');
             $table->dateTime('archived_at')->nullable()->comment('تاريخ الارشفة');

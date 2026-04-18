@@ -15,15 +15,16 @@ use App\Http\Controllers\admin\jobs_categoriesController;
 use App\Http\Controllers\admin\Main_salary_employee_absenceController;
 use App\Http\Controllers\admin\Main_salary_employee_additionController;
 use App\Http\Controllers\admin\Main_salary_employee_allowancesController;
-use App\Http\Controllers\Admin\Main_salary_employee_discountsController;
+use App\Http\Controllers\admin\Main_salary_employee_discountsController;
 use App\Http\Controllers\admin\Main_salary_employee_loansController;
 use App\Http\Controllers\admin\Main_salary_employee_permanent_loansController;
 use App\Http\Controllers\admin\Main_salary_employee_rewardsController;
 use App\Http\Controllers\admin\Main_salary_employee_sanctionsController;
+use App\Http\Controllers\admin\Main_salary_employeeController;
 use App\Http\Controllers\admin\Main_Salary_RecordController;
 use App\Http\Controllers\admin\MainSalaryRecord;
 use App\Http\Controllers\admin\NationalitiesController;
-use App\Http\Controllers\Admin\OccasionsController;
+use App\Http\Controllers\admin\OccasionsController;
 use App\Http\Controllers\admin\QualificationsController;
 use App\Http\Controllers\admin\ReligionsController;
 use App\Http\Controllers\admin\ResignationsController;
@@ -151,6 +152,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::post('/employees/addFiles/{id}', [EmployeesController::class, 'add_files'])->name('employees.add_files');
     Route::get('/employees/download_file/{id}', [EmployeesController::class, 'download_file'])->name('employees.download_file');
     Route::get('/employees/destroy_file/{id}', [EmployeesController::class, 'destroy_file'])->name('employees.destroy_file');
+    Route::post('/employees/addFixedAllowance/{id}', [EmployeesController::class, 'addFixedAllowance'])->name('employees.addFixedAllowance');
+    Route::get('/employees/deleteFixedAllowance/{id}', [EmployeesController::class, 'deleteFixedAllowance'])->name('employees.deleteFixedAllowance');
+    Route::post('/employees/editFixedAllowance', [EmployeesController::class, 'editFixedAllowance'])->name('employees.editFixedAllowance');
+    Route::post('/employees/updateFixedAllowance/{id}', [EmployeesController::class, 'updateFixedAllowance'])->name('employees.updateFixedAllowance');
 
     // بداية الإضافي على الراتب
     Route::get('/additionalSalTypes', [Additional_sal_typesController::class, 'index'])->name('additionalsaltypes.index');
@@ -179,6 +184,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     // بداية السجلات الرئيسية للرواتب
     Route::get('/mainsalaryrecord', [Main_Salary_RecordController::class, 'index'])->name('mainsalaryrecord.index');
     Route::post('/mainsalaryrecord/do_open_month/{id}', [Main_Salary_RecordController::class, 'do_open_month'])->name('mainsalaryrecord.do_open_month');
+    Route::get('/mainsalaryrecord/do_close_month/{id}', [Main_Salary_RecordController::class, 'do_close_month'])->name('mainsalaryrecord.do_close_month');
     Route::post('/mainsalaryrecord/load_open_month', [Main_Salary_RecordController::class, 'load_open_month'])->name('mainsalaryrecord.load_open_month');
     Route::post('/mainsalaryrecord/ajaxSearch', [Main_Salary_RecordController::class, 'ajaxSearch'])->name('mainsalaryrecord.ajaxSearch');
     
@@ -268,7 +274,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     
     // بداية السلف المستديمة للرواتب
     Route::get('/mainsalarypermanent_loan', [Main_salary_employee_permanent_loansController::class, 'index'])->name('mainsalarypermanent_loan.index');
-    // Route::get('/mainsalarypermanent_loan/show/{id}', [Main_salary_employee_permanent_loansController::class, 'show'])->name('mainsalarypermanent_loan.show');
     Route::post('/mainsalarypermanent_loan/checkExist', [Main_salary_employee_permanent_loansController::class, 'checkExist'])->name('mainsalarypermanent_loan.checkExist');
     Route::post('/mainsalarypermanent_loan/store', [Main_salary_employee_permanent_loansController::class, 'store'])->name('mainsalarypermanent_loan.store');
     Route::post('/mainsalarypermanent_loan/ajaxSearch', [Main_salary_employee_permanent_loansController::class, 'ajaxSearch'])->name('mainsalarypermanent_loan.ajaxSearch');
@@ -277,9 +282,24 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function (){
     Route::post('/mainsalarypermanent_loan/delete', [Main_salary_employee_permanent_loansController::class, 'delete'])->name('mainsalarypermanent_loan.delete');
     Route::post('/mainsalarypermanent_loan/p_loan_installments', [Main_salary_employee_permanent_loansController::class, 'p_loan_installments'])->name('mainsalarypermanent_loan.p_loan_installments');
     Route::post('/mainsalarypermanent_loan/printSearch', [Main_salary_employee_permanent_loansController::class, 'printSearch'])->name('mainsalarypermanent_loan.printSearch');
-    // Route::get('/mainsalarypermanent_loan/dismiss_p_loan/{id}', [Main_salary_employee_permanent_loansController::class, 'dismiss_p_loan'])->name('mainsalarypermanent_loan.dismiss_p_loan');
     Route::post('/mainsalarypermanent_loan/dismiss_p_loan', [Main_salary_employee_permanent_loansController::class, 'dismiss_p_loan'])->name('mainsalarypermanent_loan.dismiss_p_loan');
     
+    // بداية الرواتب النهائية
+    Route::get('/mainsalaryemployee', [Main_salary_employeeController::class, 'index'])->name('mainsalaryemployee.index');
+    Route::get('/mainsalaryemployee/show/{id}', [Main_salary_employeeController::class, 'show'])->name('mainsalaryemployee.show');
+    Route::post('/mainsalaryemployee/add_salary', [Main_salary_employeeController::class, 'add_salary'])->name('mainsalaryemployee.add_salary');
+    Route::post('/mainsalaryemployee/delete_salary', [Main_salary_employeeController::class, 'delete_salary'])->name('mainsalaryemployee.delete_salary');
+    Route::get('/mainsalaryemployee/show/showSalDetails/{id}', [Main_salary_employeeController::class, 'showSalDetails'])->name('mainsalaryemployee.showSalDetails');
+    Route::post('/mainsalaryemployee/ajaxSearch', [Main_salary_employeeController::class, 'ajaxSearch'])->name('mainsalaryemployee.ajaxSearch');
+    Route::post('/mainsalaryemployee/showAjaxSearch', [Main_salary_employeeController::class, 'showAjaxSearch'])->name('mainsalaryemployee.showAjaxSearch');
+    Route::post('/mainsalaryemployee/printSearch', [Main_salary_employeeController::class, 'printSearch'])->name('mainsalaryemployee.printSearch');
+    Route::get('/mainsalaryemployee/stopSalary/{id}', [Main_salary_employeeController::class, 'stopSalary'])->name('mainsalaryemployee.stopSalary');
+    Route::get('/mainsalaryemployee/resumeSalary/{id}', [Main_salary_employeeController::class, 'resumeSalary'])->name('mainsalaryemployee.resumeSalary');
+    Route::get('/mainsalaryemployee/detailsDeleteSalary/{id}', [Main_salary_employeeController::class, 'detailsDeleteSalary'])->name('mainsalaryemployee.detailsDeleteSalary');
+    Route::post('/mainsalaryemployee/detailsShowArchiveSalary', [Main_salary_employeeController::class, 'detailsShowArchiveSalary'])->name('mainsalaryemployee.detailsShowArchiveSalary');
+    Route::post('/mainsalaryemployee/detailsArchiveSalary/{id}', [Main_salary_employeeController::class, 'detailsArchiveSalary'])->name('mainsalaryemployee.detailsArchiveSalary');
+    Route::get('/mainsalaryemployee/detailsPrintSalary/{id}', [Main_salary_employeeController::class, 'detailsPrintSalary'])->name('mainsalaryemployee.detailsPrintSalary');
+
 });
 
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'guest:admin'], function (){

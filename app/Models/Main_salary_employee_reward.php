@@ -24,7 +24,7 @@ class Main_salary_employee_reward extends Model
         return $this->BelongsTo('\App\Models\Admins', 'archived_by');
     }
     public function addition_type(){
-        return $this->BelongsTo('\App\Models\additional_sal_type', 'additions_type');
+        return $this->BelongsTo('\App\Models\additional_sal_type', 'additions_type_id');
     }
     public function finance_month(){
         return $this->BelongsTo('\App\Models\Finance_months_periods', 'finance_months_periods_id');

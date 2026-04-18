@@ -9,9 +9,12 @@ use App\Models\Employee;
 use App\Models\Finance_calenders;
 use App\Models\Finance_months_periods;
 use App\Models\Main_salary_employee;
+use App\Traits\generalTrait;
 
 class Main_Salary_RecordController extends Controller
 {
+    use generalTrait;
+
     // Show the page of Months records 
     public function index()
     {
@@ -94,7 +97,7 @@ class Main_Salary_RecordController extends Controller
             ////
             if ($falg) {
                 // Get All Active Employees with functional_status = 1 
-                $all_active_employees = get_cols_where( 
+                $all_active_employees = get_cols_where(
                     new Employee(),
                     array(
                         'employee_code',
@@ -133,8 +136,14 @@ class Main_Salary_RecordController extends Controller
                             $dataSalaryToInsert['functional_status'] = $info->functional_status;
                             $dataSalaryToInsert['emp_sal'] = $info->emp_sal;
                             $dataSalaryToInsert['day_price'] = $info->day_price;
-                            // Re-Explain it 
-                            $dataSalaryToInsert['last_salary_remain_balance'] = 0;
+                            // Bring tha last salary record for the employee and get his salary 
+                            $lastsalaryData = get_cols_where_row_orderby(new Main_salary_employee(), ['final_the_net_after_close'], ['com_code' => $com_code, 'employee_code' => $info->employee_code, 'is_archived' => 1], 'id', 'DESC');
+                            if (!empty($lastsalaryData)) {
+                                $dataSalaryToInsert['last_salary_remain_balance'] = $lastsalaryData['final_the_net_after_close'];
+                            } else {
+                                $dataSalaryToInsert['last_salary_remain_balance'] = 0;
+                            }
+
                             // 
                             $dataSalaryToInsert['year_and_month'] = $data->year_and_month;
                             $dataSalaryToInsert['finance_yr'] = $data->finance_yr;
@@ -142,7 +151,11 @@ class Main_Salary_RecordController extends Controller
 
                             $dataSalaryToInsert['added_by'] = auth()->user()->id;
 
-                            insert(new Main_salary_employee(), $dataSalaryToInsert);
+                            $flagInsert = insert(new Main_salary_employee(), $dataSalaryToInsert);
+
+                            if (!empty($flagInsert)) {
+                                $this->recaculate_main_salary_employee($flagInsert['id']);
+                            }
                         }
                     }
                 }
@@ -151,6 +164,93 @@ class Main_Salary_RecordController extends Controller
             DB::commit();
 
             return redirect()->route("mainsalaryrecord.index")->with(['success' => 'تم فتح الشهر المالي بنجاح']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
+        }
+    }
+
+    // Close the month record 
+    public function do_close_month($id)
+    {
+        try {
+            $com_code = auth()->user()->com_code;
+            $data = get_cols_where_row(new Finance_months_periods(), array('finance_yr', 'is_open'), array('com_code' => $com_code, 'id' => $id));
+            if (empty($data)) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
+            }
+            
+            // Check if the year of this month is Exists 
+            $currentYear = get_cols_where_row(new Finance_calenders(), array('is_open'), array('com_code' => $com_code, 'finance_yr' => $data->finance_yr));
+            if (empty($currentYear)) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً غير قادر على الوصول لبيانات السنة المالية المطلوبة']);
+            }
+
+            // Check if the year of this month is not opened 
+            if ($currentYear['is_open'] != 1) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً السنة المالية التابع لها هذا الشهر غير مفتوحة حالياً']);
+            }
+
+            // Check if the month is opened 
+            if ($data['is_open'] == 0) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً هذا الشهر بانتظار الفتح']);
+            }
+
+            // Check if the month is Archived 
+            if ($data['is_open'] == 2) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً هذا الشهر بالفعل مؤرشف من قبل']);
+            }
+
+            // Check if there is a stoped salary in the month 
+            $counterStop = get_count_where(new Main_salary_employee(), array('com_code' => $com_code, 'finance_month_id' => $id, 'is_stoped' => 1));
+            if ($counterStop > 0) {
+                return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً لا يمكن إيقاف الشهر لوجود رواتب موقوفة', 'stopped_exist' => $id]);
+            }
+
+            DB::beginTransaction();
+
+            $dataToUpdate['is_open'] = 2;
+            $dataToUpdate['updated_by'] = auth()->user()->id;
+
+            $falg = update(new Finance_months_periods(), $dataToUpdate, array('com_code' => $com_code, 'id' => $id));
+
+            ////
+            // Close Employees Salary Codes 
+            ////
+            if ($falg) {
+                // Get All Active Employees with functional_status = 1 
+                $alMainSalaryEmployees = get_cols_where(
+                    new Main_salary_employee(),
+                    array('*'),
+                    array('com_code' => $com_code, 'finance_month_id' => $id),
+                    "id",
+                    "ASC"
+                );
+
+                if (!empty($alMainSalaryEmployees)) {
+                    foreach ($alMainSalaryEmployees as $info) {
+                        $salaryDataToUpdate['is_archived'] = 1;
+                        $salaryDataToUpdate['archived_by'] = auth()->user()->id;
+                        $salaryDataToUpdate['archived_date'] = date('Y-m-d H:i:s');
+                        $salaryDataToUpdate['updated_by'] = auth()->user()->id;
+
+                        // If the final_the_net for the employee is less than 0, 
+                        // then set the final_the_net_after_close to the final_the_net 
+                        // else set the final_the_net_after_close to 0 
+                        if ($info->final_the_net < 0) {
+                            $salaryDataToUpdate['final_the_net_after_close'] = $info->final_the_net;
+                        } else {
+                            $salaryDataToUpdate['final_the_net_after_close'] = 0;
+                        }
+
+                        $flag = update(new Main_salary_employee(), $salaryDataToUpdate, array('com_code' => $com_code, 'id' => $info->id, 'is_archived' => 0, 'is_stoped' => 0));
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route("mainsalaryrecord.index")->with(['success' => 'تم إغلاق الشهر المالي بنجاح']);
         } catch (\Exception $ex) {
             DB::rollBack();
             return redirect()->back()->with(['error' => 'عفواً حدث خطأ ما ' . $ex->getMessage()]);
@@ -167,7 +267,7 @@ class Main_Salary_RecordController extends Controller
             // if (empty($data)) {
             //     return redirect()->route("mainsalaryrecord.index")->with(['error' => 'عفواً غير قادر على الوصول للبيانات المطلوبة']);
             // }
-            
+
             return view('admin.main_salary_record.load_open_monthModal', ['data' => $data]);
         }
     }
@@ -182,7 +282,7 @@ class Main_Salary_RecordController extends Controller
             } else {
                 $data = get_cols_where_p(new Finance_months_periods(), array("*"), array("com_code" => $com_code, 'finance_yr' => $request->finance_yr), "month_id", "ASC", 12);
             }
-            
+
             if (!empty($data)) {
                 foreach ($data as $info) {
                     // check status of current year is open and 

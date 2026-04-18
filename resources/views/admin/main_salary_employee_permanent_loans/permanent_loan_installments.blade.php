@@ -47,7 +47,7 @@
                   <tr style="cursor: pointer">
                       <td style="vertical-align: middle"> {{ $info->monthly_installment_value * 1 }} رس </td>
                       <td style="vertical-align: middle"> {{ $info->year_and_month }} </td>
-                      <td style="vertical-align: middle"> @if ($info->state == 0) لم يتم الدفع @elseif ($info->state == 1) تم الدفع على الراتب @elseif ($info->state == 2) تم الدفع كاش @endif </td>
+                      <td style="vertical-align: middle"> @if ($info->status == 0) لم يتم الدفع @elseif ($info->status == 1) تم الدفع على الراتب @elseif ($info->status == 2) تم الدفع كاش @endif </td>
                       <td style="vertical-align: middle"> @if ($info->is_archived == 0) غير مرشف @else مؤرشف @endif </td>
                   </tr>
                   @endforeach

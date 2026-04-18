@@ -802,6 +802,18 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="does_has_fixed_allowance">هل له بدلات ثابتة:</label>
+                                            <select name="does_has_fixed_allowance" class="form-control" id="does_has_fixed_allowance">
+                                                <option {{ old('does_has_fixed_allowance') == 1 ? 'selected' : '' }} value="1">نعم</option>
+                                                <option {{ old('does_has_fixed_allowance') == 0 ? 'selected' : '' }} value="0">لا</option>
+                                            </select>
+                                            @error('does_has_fixed_allowance')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="addional_data" role="tabpanel" aria-labelledby="custom-content-above-messages-tab">
@@ -882,18 +894,6 @@
                                             <label for="resignation_cause">سبب ترك العمل:</label>
                                             <input type="text" name="resignation_cause" id="resignation_cause" class="form-control" value="{{ old('resignation_cause') }}">
                                             @error('resignation_cause')
-                                            <span class="text-danger"> {{ $message }} </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="does_has_fixed_allowance">هل له بدلات ثابتة:</label>
-                                            <select name="does_has_fixed_allowance" class="form-control" id="does_has_fixed_allowance">
-                                                <option {{ old('does_has_fixed_allowance') == 1 ? 'selected' : '' }} value="1">نعم</option>
-                                                <option {{ old('does_has_fixed_allowance') == 0 ? 'selected' : '' }} value="0">لا</option>
-                                            </select>
-                                            @error('does_has_fixed_allowance')
                                             <span class="text-danger"> {{ $message }} </span>
                                             @enderror
                                         </div>

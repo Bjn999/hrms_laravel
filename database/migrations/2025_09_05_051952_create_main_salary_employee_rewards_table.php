@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('finance_months_periods_id')->references('id')->on('finance_months_periods')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger('employee_code');
             $table->decimal('day_price', 10, 2)->comment('الراتب اليومي للموظف');
-            $table->foreignId('additions_type')->comment('نوع إضافي المكافئة')->references('id')->on('additional_sal_types')->onUpdate('cascade');
+            $table->foreignId('additions_type_id')->comment('نوع إضافي المكافئة')->references('id')->on('additional_sal_types')->onUpdate('cascade');
             $table->decimal('total', 10, 2)->comment('اجمالي المكافئة');
             $table->integer('is_archived')->default(0)->comment('هل تم الارشفة');
             $table->foreignId('archived_by')->nullable()->comment('من الذي ارشفه')->references('id')->on('admins')->onUpdate('cascade');

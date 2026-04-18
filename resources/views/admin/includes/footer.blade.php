@@ -4,7 +4,7 @@
         Anything you want
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2024-2025 <a href="/hrms_laravel">BjnHRMS</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; 2024-2026 <a href="/hrms_laravel">BjnHRMS</a>.</strong> All rights reserved.
 </footer>
 
 <!-- .loadingModal -->

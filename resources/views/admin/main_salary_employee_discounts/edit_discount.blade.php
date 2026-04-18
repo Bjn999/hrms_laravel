@@ -32,7 +32,7 @@
                 <option selected value="">غير محدد</option>
                 @if (isset($discountal_types) and !empty($discountal_types))
                 @foreach ($discountal_types as $info)
-                <option @if($discount_data['discounts_type'] == $info->id) selected @endif value="{{ $info->id }}">{{ $info->name }}</option>
+                <option @if($discount_data['discounts_type_id'] == $info->id) selected @endif value="{{ $info->id }}">{{ $info->name }}</option>
                 @endforeach
                 @endif
             </select>
